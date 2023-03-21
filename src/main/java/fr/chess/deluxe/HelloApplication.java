@@ -1,4 +1,4 @@
-package fr.chess;
+package fr.chess.deluxe;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
