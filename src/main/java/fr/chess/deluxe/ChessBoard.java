@@ -9,8 +9,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.util.Map;
-
 public class ChessBoard extends Application {
 
     private static final int CHESS_SQUARE_SIZE = 100;
@@ -69,10 +67,11 @@ public class ChessBoard extends Application {
                     ChessSquare clickedSquare = this.getBoard()[finalX][finalY];
                     //bouger la piece
                     if(selectedSquare != null && selectedSquare.hasPiece()
-                            && selectedSquare.getChessPiece().getPieceColor() == actualPlayer
+                            && selectedSquare.getPiece().getPieceColor() == actualPlayer
                             && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
-                        clickedSquare.setPiece(selectedSquare.getChessPiece());
+                        clickedSquare.setPiece(selectedSquare.getPiece());
                         selectedSquare.removePiece();
+                        actualPlayer = actualPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
                     } else {
                         selectedSquare = clickedSquare;
                     }

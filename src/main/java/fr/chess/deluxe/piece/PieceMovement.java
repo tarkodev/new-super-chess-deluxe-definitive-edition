@@ -24,8 +24,8 @@ public enum PieceMovement {
 
         if ((0 <= x && x <= 7 && 0 <= y && y <= 7)) {
             ChessSquare chessSquare = board.getBoard()[x][y];
-            boolean chessSquareHasPiece = chessSquare.getChessPiece() != null;
-            boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getChessPiece().getPieceColor() != color;
+            boolean chessSquareHasPiece = chessSquare.getPiece() != null;
+            boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != color;
 
             if(!chessSquareHasPiece || chessSquareHasOppositePieceColor) {
                 possibleSquare.add(chessSquare);
@@ -35,29 +35,10 @@ public enum PieceMovement {
         }
     }
 
-
-
-    /*private void rookRec(ChessBoard board, List<ChessSquare> possibleSquare, int x, int y, PieceColor color, char dir) {
-        if (0 <= x && x <= 7 && 0 <= y && y <= 7) {
-            switch (dir)  {
-                case ('l'): {
-                    if (x==0) {
-                        return;
-                    } else if (board.getBoard()[x-1][y].getChessPiece().getPieceColor() == color) {
-
-                    }
-                }
-                default: {
-                    return;
-                }
-            }
-        }
-    }*/
-
     public List<ChessSquare> getPossibleMoves(ChessSquare chessSquare) {
         int x = chessSquare.getX();
         int y = chessSquare.getY();
-        ChessColor color = chessSquare.getChessPiece().getPieceColor();
+        ChessColor color = chessSquare.getPiece().getPieceColor();
         List<ChessSquare> possibleSquare = new ArrayList<>();
         switch (this) {
             case ROOK -> {
@@ -93,19 +74,27 @@ public enum PieceMovement {
                 laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY-1, color, false);
             }
             case PAWN -> {
-                if (color == ChessColor.WHITE) {
-                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY-1, color, false);
-                    if (y == 6) {
-                        laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY-2, color, false);
-                    }
-                }
-                else {
-                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY+1, color, false);
+                int oneForward = color == ChessColor.WHITE ? -1 : 1;
+                int secondLine = color == ChessColor.WHITE ? 6 : 1;
 
-                    if (y == 1) {
-                        laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY+2, color, false);
+
+
+
+                 if (!chessSquare.getChessBoard().getBoard()[x][y+oneForward].hasPiece()) {
+                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY + oneForward, color, false);
+                    if (y == secondLine && !chessSquare.getChessBoard().getBoard()[x][y + oneForward*2].hasPiece()) {
+                        laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY + oneForward*2, color, false);
                     }
-                }
+                 }
+                if (x > 0 && chessSquare.getChessBoard().getBoard()[x-1][y+oneForward].hasPiece())
+                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY + oneForward, color, false);
+
+                if (x < 7 && chessSquare.getChessBoard().getBoard()[x+1][y+oneForward].hasPiece())
+                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY + oneForward, color, false);
+
+
+
+
             }
         }
 

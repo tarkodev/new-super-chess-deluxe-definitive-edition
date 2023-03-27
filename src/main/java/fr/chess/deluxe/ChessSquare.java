@@ -12,9 +12,9 @@ public class ChessSquare {
 
     private final ChessBoard chessBoard;
     private final int x, y;
-    private ChessPiece chessPiece;
+    private ChessPiece piece;
 
-    private Button button;
+    private final Button button;
 
     public ChessSquare(ChessBoard chessBoard, int x, int y, Button button) {
         this.chessBoard = chessBoard;
@@ -24,29 +24,33 @@ public class ChessSquare {
     }
 
     public void setPiece(ChessPiece chessPiece) {
-        this.chessPiece = chessPiece;
+        this.piece = chessPiece;
         renderPiece();
     }
 
     public void removePiece() {
-        this.chessPiece = null;
+        this.piece = null;
         ImageView imageView = new ImageView((Image) null);
         button.setGraphic(imageView);
     }
 
     public boolean hasPiece() {
-        return this.chessPiece != null;
+        return this.piece != null;
+    }
+
+    public ChessPiece getPiece() {
+        return piece;
     }
 
     public void renderPiece() {
-        Image image = new Image(chessPiece.getId() + ".png");
+        Image image = new Image(piece.getId() + ".png");
         ImageView imageView = new ImageView(image);
         button.setGraphic(imageView);
     }
 
     public List<ChessSquare> getPossibleMoves() {
         List<ChessSquare> result = new ArrayList<>();
-        chessPiece.getMovements().forEach(movement -> result.addAll(movement.getPossibleMoves(this)));
+        piece.getMovements().forEach(movement -> result.addAll(movement.getPossibleMoves(this)));
         return result;
     }
 
@@ -64,13 +68,7 @@ public class ChessSquare {
         return y;
     }
 
-    public boolean hasChessPiece() {
-        return chessPiece != null;
-    }
 
-    public ChessPiece getChessPiece() {
-        return chessPiece;
-    }
 
 
     public ChessBoard getChessBoard() {
