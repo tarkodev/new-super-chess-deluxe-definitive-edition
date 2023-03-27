@@ -4,19 +4,19 @@ import fr.chess.deluxe.utils.ChessColor;
 
 import java.util.Set;
 
-public class ChessPieceQueen extends ChessPiece {
+public class ChessPieceKnight extends ChessPiece{
 
-    public ChessPieceQueen(ChessColor chessColor) {
+    public ChessPieceKnight(ChessColor chessColor) {
         super(chessColor);
     }
 
     @Override
     public Set<PieceMovement> getMovements() {
-        return Set.of(PieceMovement.ROOK, PieceMovement.BISHOP);
+        return Set.of(PieceMovement.KNIGHT);
     }
 
     @Override
     public char getChar() {
-        return 'Q';
+        return 'N';
     }
 }

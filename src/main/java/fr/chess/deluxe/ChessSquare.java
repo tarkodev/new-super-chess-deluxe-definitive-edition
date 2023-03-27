@@ -1,16 +1,67 @@
 package fr.chess.deluxe;
 
 import fr.chess.deluxe.piece.ChessPiece;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChessSquare {
 
     private final ChessBoard chessBoard;
-    private final String position;
+    private final int x, y;
     private ChessPiece chessPiece;
 
-    public ChessSquare(ChessBoard chessBoard, String position) {
+    private Button button;
+
+    public ChessSquare(ChessBoard chessBoard, int x, int y, Button button) {
         this.chessBoard = chessBoard;
-        this.position = position;
+        this.x = x;
+        this.y = y;
+        this.button = button;
+    }
+
+    public void setPiece(ChessPiece chessPiece) {
+        this.chessPiece = chessPiece;
+        renderPiece();
+    }
+
+    public void removePiece() {
+        this.chessPiece = null;
+        ImageView imageView = new ImageView((Image) null);
+        button.setGraphic(imageView);
+    }
+
+    public boolean hasPiece() {
+        return this.chessPiece != null;
+    }
+
+    public void renderPiece() {
+        Image image = new Image(chessPiece.getId() + ".png");
+        ImageView imageView = new ImageView(image);
+        button.setGraphic(imageView);
+    }
+
+    public List<ChessSquare> getPossibleMoves() {
+        List<ChessSquare> result = new ArrayList<>();
+        chessPiece.getMovements().forEach(movement -> result.addAll(movement.getPossibleMoves(this)));
+        return result;
+    }
+
+
+
+    public Button getButton() {
+        return button;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     public boolean hasChessPiece() {
@@ -21,15 +72,13 @@ public class ChessSquare {
         return chessPiece;
     }
 
-    public void setChessPiece(ChessPiece chessPiece) {
-        this.chessPiece = chessPiece;
-    }
 
     public ChessBoard getChessBoard() {
         return chessBoard;
     }
 
-    public String getPosition() {
-        return position;
+    @Override
+    public String toString() {
+        return chessBoard.convertToString(x, y);
     }
 }

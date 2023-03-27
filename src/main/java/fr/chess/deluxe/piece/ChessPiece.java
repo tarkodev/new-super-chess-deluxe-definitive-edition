@@ -1,18 +1,27 @@
 package fr.chess.deluxe.piece;
 
-import fr.chess.deluxe.ChessPieceType;
-import fr.chess.deluxe.ChessSquare;
+import fr.chess.deluxe.utils.ChessColor;
 
 import java.util.Set;
 
 public abstract class ChessPiece {
 
-    private ChessPieceType chessPieceType;
+    private final ChessColor chessColor;
 
-    public abstract Set<Movement> getMovements();
-
-    public void getPossibleCase(ChessSquare chessSquare) {
-
+    protected ChessPiece(ChessColor chessColor) {
+        this.chessColor = chessColor;
     }
+
+    public ChessColor getPieceColor() {
+        return chessColor;
+    }
+
+    public abstract Set<PieceMovement> getMovements();
+
+    public String getId() {
+        return chessColor.getChar() + "" + this.getChar();
+    }
+
+    public abstract char getChar();
 
 }
