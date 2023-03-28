@@ -88,16 +88,16 @@ public class ChessBoard extends Application {
     }
 
     public void loadPieces() {
-        this.getBoard()[0][7].setPiece(new ChessPieceRook(ChessColor.WHITE));
-        this.getBoard()[7][7].setPiece(new ChessPieceRook(ChessColor.WHITE));
-        this.getBoard()[1][7].setPiece(new ChessPieceKnight(ChessColor.WHITE));
-        this.getBoard()[6][7].setPiece(new ChessPieceKnight(ChessColor.WHITE));
-        this.getBoard()[2][7].setPiece(new ChessPieceBishop(ChessColor.WHITE));
-        this.getBoard()[5][7].setPiece(new ChessPieceBishop(ChessColor.WHITE));
-        this.getBoard()[3][7].setPiece(new ChessPieceQueen(ChessColor.WHITE));
-        this.getBoard()[4][7].setPiece(new ChessPieceKing(ChessColor.WHITE));
+        this.getBoard()[0][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceRook(ChessColor.WHITE));
+        this.getBoard()[7][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceRook(ChessColor.WHITE));
+        this.getBoard()[1][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKnight(ChessColor.WHITE));
+        this.getBoard()[6][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKnight(ChessColor.WHITE));
+        this.getBoard()[2][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceBishop(ChessColor.WHITE));
+        this.getBoard()[5][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceBishop(ChessColor.WHITE));
+        this.getBoard()[3][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceQueen(ChessColor.WHITE));
+        this.getBoard()[4][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKing(ChessColor.WHITE));
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            this.getBoard()[i][6].setPiece(new ChessPiecePawn(ChessColor.WHITE));
+            this.getBoard()[i][CHESS_SQUARE_LENGTH-2].setPiece(new ChessPiecePawn(ChessColor.WHITE));
         }
         this.getBoard()[0][0].setPiece(new ChessPieceRook(ChessColor.BLACK));
         this.getBoard()[7][0].setPiece(new ChessPieceRook(ChessColor.BLACK));
