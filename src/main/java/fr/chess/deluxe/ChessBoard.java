@@ -18,11 +18,14 @@ public class ChessBoard extends Application {
     private static final String CHESS_SQUARE_COLOR_2 = "#3C1D18";
 
 
-    public static final int SIZE = 8;
-    private final ChessSquare[][] board = new ChessSquare[SIZE][SIZE];
+    private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
     private ChessColor actualPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
+
+    public static int getChessSquareLength() {
+        return CHESS_SQUARE_LENGTH;
+    }
 
     @Override
     public void start(Stage stage) {
@@ -107,7 +110,6 @@ public class ChessBoard extends Application {
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
             this.getBoard()[i][1].setPiece(new ChessPiecePawn(ChessColor.BLACK));
         }
-        //chessBoardClass.getBoard()[3][3].setPiece(new ChessPieceKing(PieceColor.WHITE));
     }
 
     public static void main(String[] args) {
@@ -120,7 +122,7 @@ public class ChessBoard extends Application {
 
     public String convertToString(int x, int y) {
         String xString = String.valueOf((char) ('a' + x));
-        String yString = String.valueOf(8-y);
+        String yString = String.valueOf(CHESS_SQUARE_LENGTH-y);
         return xString + yString;
     }
 }

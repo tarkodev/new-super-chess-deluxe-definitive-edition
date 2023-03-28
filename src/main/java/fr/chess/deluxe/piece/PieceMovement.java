@@ -22,7 +22,7 @@ public enum PieceMovement {
         x = xLas.apply(x);
         y = yLas.apply(y);
 
-        if ((0 <= x && x <= 7 && 0 <= y && y <= 7)) {
+        if (0 <= x && x <= ChessBoard.getChessSquareLength()-1 && 0 <= y && y <= ChessBoard.getChessSquareLength()-1) {
             ChessSquare chessSquare = board.getBoard()[x][y];
             boolean chessSquareHasPiece = chessSquare.getPiece() != null;
             boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != color;
@@ -75,7 +75,7 @@ public enum PieceMovement {
             }
             case PAWN -> {
                 int oneForward = color == ChessColor.WHITE ? -1 : 1;
-                int secondLine = color == ChessColor.WHITE ? 6 : 1;
+                int secondLine = color == ChessColor.WHITE ? ChessBoard.getChessSquareLength()-2 : 1;
 
 
 
@@ -89,7 +89,7 @@ public enum PieceMovement {
                 if (x > 0 && chessSquare.getChessBoard().getBoard()[x-1][y+oneForward].hasPiece())
                     laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY + oneForward, color, false);
 
-                if (x < 7 && chessSquare.getChessBoard().getBoard()[x+1][y+oneForward].hasPiece())
+                if (x < ChessBoard.getChessSquareLength()-1 && chessSquare.getChessBoard().getBoard()[x+1][y+oneForward].hasPiece())
                     laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY + oneForward, color, false);
 
 
