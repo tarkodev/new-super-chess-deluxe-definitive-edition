@@ -65,7 +65,7 @@ public class ChessSquare {
     }
 
     public Coordinates getCoordinates() {
-        return coordinates;
+        return coordinates.clone();
     }
 
     @Override
