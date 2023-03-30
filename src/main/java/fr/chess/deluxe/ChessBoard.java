@@ -55,6 +55,10 @@ public class ChessBoard extends Application {
         this.currentPlayer = currentPlayer;
     }
 
+    public void switchCurrentPlayer() {
+        setCurrentPlayer(getCurrentPlayer() == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
+    }
+
     private Button initButton(int x, int y) {
         String color = ((x + y) % 2) == 0 ? CHESS_SQUARE_COLOR_1 : CHESS_SQUARE_COLOR_2;
 
@@ -80,7 +84,7 @@ public class ChessBoard extends Application {
 
 
                 move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
-                currentPlayer = currentPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+                switchCurrentPlayer();
             } else {
                 selectedSquare = clickedSquare;
             }

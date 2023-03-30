@@ -65,11 +65,11 @@ public class ChessSquare {
     }
 
     public Coordinates getCoordinates() {
-        return coordinates;
+        return coordinates.clone();
     }
 
     @Override
     public String toString() {
-        return getCoordinates().toString();
+        return coordinates.toString();
     }
 }
