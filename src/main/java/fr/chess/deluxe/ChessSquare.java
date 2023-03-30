@@ -55,7 +55,6 @@ public class ChessSquare {
     }
 
 
-
     public Button getButton() {
         return button;
     }
@@ -67,8 +66,6 @@ public class ChessSquare {
     public int getY() {
         return y;
     }
-
-
 
 
     public ChessBoard getChessBoard() {

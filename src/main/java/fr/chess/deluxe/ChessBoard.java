@@ -2,6 +2,7 @@ package fr.chess.deluxe;
 
 import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
+import fr.chess.deluxe.utils.Coordinates;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -11,11 +12,12 @@ import javafx.stage.Stage;
 
 public class ChessBoard extends Application {
 
-    private static final int CHESS_SQUARE_SIZE = 100;
-    private static final int CHESS_SQUARE_LENGTH = 8;
+    public static final int CHESS_SQUARE_SIZE = 100;
+    public static final int CHESS_SQUARE_LENGTH = 8;
 
-    private static final String CHESS_SQUARE_COLOR_1 = "#EFCCA6";
-    private static final String CHESS_SQUARE_COLOR_2 = "#3C1D18";
+    public static final String CHESS_SQUARE_COLOR_1 = "#EFCCA6";
+    public static final String CHESS_SQUARE_COLOR_2 = "#3C1D18";
+    public static final String CHESS_BACKGROUND_COLOR = "#96755F";
 
 
     private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
@@ -23,17 +25,14 @@ public class ChessBoard extends Application {
     private ChessColor actualPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
 
-    public static int getChessSquareLength() {
-        return CHESS_SQUARE_LENGTH;
-    }
-
     @Override
     public void start(Stage stage) {
         GridPane chessBoardRender = initChessBoardRender();
+        chessBoardRender.setStyle("-fx-background-color: " + CHESS_BACKGROUND_COLOR);
 
         loadPieces();
 
-        Scene scene = new Scene(chessBoardRender, CHESS_SQUARE_SIZE*CHESS_SQUARE_LENGTH, CHESS_SQUARE_SIZE*CHESS_SQUARE_LENGTH);
+        Scene scene = new Scene(chessBoardRender, CHESS_SQUARE_SIZE * CHESS_SQUARE_LENGTH, CHESS_SQUARE_SIZE * CHESS_SQUARE_LENGTH);
         stage.setResizable(false);
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
@@ -48,39 +47,47 @@ public class ChessBoard extends Application {
         this.actualPlayer = actualPlayer;
     }
 
-    public GridPane initChessBoardRender() {
+    private Button initButton(int x, int y) {
+        String color = ((x + y) % 2) == 0 ? CHESS_SQUARE_COLOR_1 : CHESS_SQUARE_COLOR_2;
+
+        Button button = new Button("");
+        button.setPrefWidth(CHESS_SQUARE_SIZE);
+        button.setPrefHeight(CHESS_SQUARE_SIZE);
+        button.setPadding(new Insets(0));
+        button.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 8px;");
+
+        actionButton(button, x, y);
+
+        return button;
+    }
+
+    private void actionButton(Button button, int x, int y) {
+        button.setOnAction(actionEvent -> {
+            ChessSquare clickedSquare = board[x][y];
+            //bouger la piece
+            if (selectedSquare != null && selectedSquare.hasPiece()
+                    && selectedSquare.getPiece().getPieceColor() == actualPlayer
+                    && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
+                clickedSquare.setPiece(selectedSquare.getPiece());
+                selectedSquare.removePiece();
+                actualPlayer = actualPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+            } else {
+                selectedSquare = clickedSquare;
+            }
+
+            System.out.println(convertToString(x, y));
+        });
+    }
+
+    private GridPane initChessBoardRender() {
         GridPane chessBoardRender = new GridPane();
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                String color = ((x+y) % 2) == 0 ? CHESS_SQUARE_COLOR_1 : CHESS_SQUARE_COLOR_2;
+                Button button = initButton(x, y);
 
-                Button button = new Button("");
-                button.setPrefWidth(CHESS_SQUARE_SIZE);
-                button.setPrefHeight(CHESS_SQUARE_SIZE);
-                button.setPadding(new Insets(0));
-                button.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 0px;");
-
-                chessBoardRender.add(button, x*CHESS_SQUARE_SIZE, y*CHESS_SQUARE_SIZE);
-                this.getBoard()[x][y] = new ChessSquare(this, x, y, button);
-
-                final int finalX = x;
-                final int finalY = y;
-                button.setOnAction(actionEvent -> {
-                    ChessSquare clickedSquare = this.getBoard()[finalX][finalY];
-                    //bouger la piece
-                    if(selectedSquare != null && selectedSquare.hasPiece()
-                            && selectedSquare.getPiece().getPieceColor() == actualPlayer
-                            && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
-                        clickedSquare.setPiece(selectedSquare.getPiece());
-                        selectedSquare.removePiece();
-                        actualPlayer = actualPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
-                    } else {
-                        selectedSquare = clickedSquare;
-                    }
-
-                    System.out.println(this.convertToString(finalX, finalY));
-                });
+                chessBoardRender.add(button, x * CHESS_SQUARE_SIZE, y * CHESS_SQUARE_SIZE);
+                board[x][y] = new ChessSquare(this, x, y, button);
             }
         }
 
@@ -88,27 +95,31 @@ public class ChessBoard extends Application {
     }
 
     public void loadPieces() {
-        this.getBoard()[0][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceRook(ChessColor.WHITE));
-        this.getBoard()[7][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceRook(ChessColor.WHITE));
-        this.getBoard()[1][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKnight(ChessColor.WHITE));
-        this.getBoard()[6][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKnight(ChessColor.WHITE));
-        this.getBoard()[2][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceBishop(ChessColor.WHITE));
-        this.getBoard()[5][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceBishop(ChessColor.WHITE));
-        this.getBoard()[3][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceQueen(ChessColor.WHITE));
-        this.getBoard()[4][CHESS_SQUARE_LENGTH-1].setPiece(new ChessPieceKing(ChessColor.WHITE));
+        setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("a1"));
+        setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("h1"));
+        setPiece(new ChessPieceKnight(ChessColor.WHITE), new Coordinates("b1"));
+        setPiece(new ChessPieceKnight(ChessColor.WHITE), new Coordinates("g1"));
+        setPiece(new ChessPieceBishop(ChessColor.WHITE), new Coordinates("c1"));
+        setPiece(new ChessPieceBishop(ChessColor.WHITE), new Coordinates("f1"));
+        setPiece(new ChessPieceQueen(ChessColor.WHITE), new Coordinates("d1"));
+        setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("e1"));
+        Coordinates firstPawnWhite = new Coordinates("a2");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            this.getBoard()[i][CHESS_SQUARE_LENGTH-2].setPiece(new ChessPiecePawn(ChessColor.WHITE));
+            setPiece(new ChessPiecePawn(ChessColor.WHITE), firstPawnWhite);
+            firstPawnWhite.setX(firstPawnWhite.getX()+1);
         }
-        this.getBoard()[0][0].setPiece(new ChessPieceRook(ChessColor.BLACK));
-        this.getBoard()[7][0].setPiece(new ChessPieceRook(ChessColor.BLACK));
-        this.getBoard()[1][0].setPiece(new ChessPieceKnight(ChessColor.BLACK));
-        this.getBoard()[6][0].setPiece(new ChessPieceKnight(ChessColor.BLACK));
-        this.getBoard()[2][0].setPiece(new ChessPieceBishop(ChessColor.BLACK));
-        this.getBoard()[5][0].setPiece(new ChessPieceBishop(ChessColor.BLACK));
-        this.getBoard()[3][0].setPiece(new ChessPieceQueen(ChessColor.BLACK));
-        this.getBoard()[4][0].setPiece(new ChessPieceKing(ChessColor.BLACK));
+        setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("a8"));
+        setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("h8"));
+        setPiece(new ChessPieceKnight(ChessColor.BLACK), new Coordinates("b8"));
+        setPiece(new ChessPieceKnight(ChessColor.BLACK), new Coordinates("g8"));
+        setPiece(new ChessPieceBishop(ChessColor.BLACK), new Coordinates("c8"));
+        setPiece(new ChessPieceBishop(ChessColor.BLACK), new Coordinates("f8"));
+        setPiece(new ChessPieceQueen(ChessColor.BLACK), new Coordinates("d8"));
+        setPiece(new ChessPieceKing(ChessColor.BLACK), new Coordinates("e8"));
+        Coordinates firstPawnBlack = new Coordinates("a7");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            this.getBoard()[i][1].setPiece(new ChessPiecePawn(ChessColor.BLACK));
+            setPiece(new ChessPiecePawn(ChessColor.BLACK), firstPawnBlack);
+            firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
     }
 
@@ -120,9 +131,18 @@ public class ChessBoard extends Application {
         return board;
     }
 
+    public void setPiece(ChessPiece piece, Coordinates coordinates) {
+        this.board[coordinates.getX()][coordinates.getY()].setPiece(piece);
+    }
+
+    public void movePiece(ChessPiece piece, int fromX, int fromY, int toX, int toY) {
+
+    }
+
     public String convertToString(int x, int y) {
         String xString = String.valueOf((char) ('a' + x));
-        String yString = String.valueOf(CHESS_SQUARE_LENGTH-y);
+        String yString = String.valueOf(CHESS_SQUARE_LENGTH - y);
         return xString + yString;
     }
+
 }
