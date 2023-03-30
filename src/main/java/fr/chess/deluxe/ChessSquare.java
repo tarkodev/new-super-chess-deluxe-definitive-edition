@@ -1,6 +1,7 @@
 package fr.chess.deluxe;
 
 import fr.chess.deluxe.piece.ChessPiece;
+import fr.chess.deluxe.utils.Coordinates;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,15 +12,14 @@ import java.util.List;
 public class ChessSquare {
 
     private final ChessBoard chessBoard;
-    private final int x, y;
+    private final Coordinates coordinates;
     private ChessPiece piece;
 
     private final Button button;
 
-    public ChessSquare(ChessBoard chessBoard, int x, int y, Button button) {
+    public ChessSquare(ChessBoard chessBoard, Coordinates coordinates, Button button) {
         this.chessBoard = chessBoard;
-        this.x = x;
-        this.y = y;
+        this.coordinates = coordinates;
         this.button = button;
     }
 
@@ -59,21 +59,17 @@ public class ChessSquare {
         return button;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
 
     public ChessBoard getChessBoard() {
         return chessBoard;
     }
 
+    public Coordinates getCoordinates() {
+        return coordinates;
+    }
+
     @Override
     public String toString() {
-        return chessBoard.convertToString(x, y);
+        return getCoordinates().toString();
     }
 }

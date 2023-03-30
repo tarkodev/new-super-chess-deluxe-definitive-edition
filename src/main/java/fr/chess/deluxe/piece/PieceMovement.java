@@ -3,10 +3,11 @@ package fr.chess.deluxe.piece;
 import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.ChessSquare;
 import fr.chess.deluxe.utils.ChessColor;
+import fr.chess.deluxe.utils.Coordinates;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public enum PieceMovement {
 
@@ -18,83 +19,78 @@ public enum PieceMovement {
     KING,
     ;
 
-    private void laser(ChessBoard board, List<ChessSquare> possibleSquare, int x, int y, Function<Integer, Integer> xLas, Function<Integer, Integer> yLas, ChessColor color, boolean recursive) {
-        x = xLas.apply(x);
-        y = yLas.apply(y);
+    private void laser(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Consumer<Coordinates> coordinatesConsumer, List<ChessSquare> possibleSquare, boolean recursive) {
+        coordinatesConsumer.accept(coordinates);
+        int x = coordinates.getX();
+        int y = coordinates.getY();
 
         if (0 <= x && x <= ChessBoard.CHESS_SQUARE_LENGTH-1 && 0 <= y && y <= ChessBoard.CHESS_SQUARE_LENGTH-1) {
             ChessSquare chessSquare = board.getBoard()[x][y];
             boolean chessSquareHasPiece = chessSquare.getPiece() != null;
-            boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != color;
+            boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != currentPieceColor;
 
             if(!chessSquareHasPiece || chessSquareHasOppositePieceColor) {
                 possibleSquare.add(chessSquare);
                 if(!chessSquareHasPiece && recursive)
-                    laser(board, possibleSquare, x, y, xLas, yLas, color, true);
+                    laser(board, currentPieceColor, coordinates, coordinatesConsumer, possibleSquare, true);
             }
         }
     }
 
     public List<ChessSquare> getPossibleMoves(ChessSquare chessSquare) {
-        int x = chessSquare.getX();
-        int y = chessSquare.getY();
-        ChessColor color = chessSquare.getPiece().getPieceColor();
+        ChessBoard chessBoard = chessSquare.getChessBoard();
+        ChessColor squarePieceColor = chessSquare.getPiece().getPieceColor();
+        Coordinates squareCoordinates = chessSquare.getCoordinates();
+
         List<ChessSquare> possibleSquare = new ArrayList<>();
         switch (this) {
             case ROOK -> {
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY-1, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY+1, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY, color, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(-1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addX(1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addX(-1), possibleSquare, true);
             }
             case BISHOP -> {
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY-1, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY+1, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY+1, color, true);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY-1, color, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), possibleSquare, true);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), possibleSquare, true);
             }
             case KNIGHT -> {
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY-2, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+2, lasY -> lasY-1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+2, lasY -> lasY+1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY+2, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY+2, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-2, lasY -> lasY+1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-2, lasY -> lasY-1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY-2, color, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -2), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, -1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, 1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 2), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 2), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, 1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, -1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -2), possibleSquare, false);
             }
             case KING -> {
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY-1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY-1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY+1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY+1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY+1, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY, color, false);
-                laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY-1, color, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(0, -1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 0), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(0, 1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 0), possibleSquare, false);
+                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), possibleSquare, false);
             }
             case PAWN -> {
-                int oneForward = color == ChessColor.WHITE ? -1 : 1;
-                int secondLine = color == ChessColor.WHITE ? ChessBoard.CHESS_SQUARE_LENGTH-2 : 1;
+                int oneForward = squarePieceColor == ChessColor.WHITE ? -1 : 1;
+                int secondLine = squarePieceColor == ChessColor.WHITE ? ChessBoard.CHESS_SQUARE_LENGTH-2 : 1;
 
-
-
-
-                 if (!chessSquare.getChessBoard().getBoard()[x][y+oneForward].hasPiece()) {
-                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY + oneForward, color, false);
-                    if (y == secondLine && !chessSquare.getChessBoard().getBoard()[x][y + oneForward*2].hasPiece()) {
-                        laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX, lasY -> lasY + oneForward*2, color, false);
-                    }
+                 if (!chessBoard.getSquare(squareCoordinates.clone().addY(oneForward)).hasPiece()) {
+                     laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), possibleSquare, false);
+                     if (squareCoordinates.getY() == secondLine && !chessBoard.getSquare(squareCoordinates.clone().addY(oneForward*2)).hasPiece()) {
+                         laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward*2), possibleSquare, false);
+                     }
                  }
-                if (x > 0 && chessSquare.getChessBoard().getBoard()[x-1][y+oneForward].hasPiece())
-                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX-1, lasY -> lasY + oneForward, color, false);
+                if (squareCoordinates.getX() > 0 && chessBoard.getSquare(squareCoordinates.clone().add(-1, oneForward)).hasPiece())
+                    laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneForward), possibleSquare, false);
 
-                if (x < ChessBoard.CHESS_SQUARE_LENGTH-1 && chessSquare.getChessBoard().getBoard()[x+1][y+oneForward].hasPiece())
-                    laser(chessSquare.getChessBoard(), possibleSquare, x, y, lasX -> lasX+1, lasY -> lasY + oneForward, color, false);
-
-
-
-
+                if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-1 && chessBoard.getSquare(squareCoordinates.clone().add(1, oneForward)).hasPiece())
+                    laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneForward), possibleSquare, false);
             }
         }
 

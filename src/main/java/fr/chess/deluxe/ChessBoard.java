@@ -22,7 +22,7 @@ public class ChessBoard extends Application {
 
     private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
-    private ChessColor actualPlayer = ChessColor.WHITE;
+    private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
 
     @Override
@@ -39,12 +39,20 @@ public class ChessBoard extends Application {
         stage.show();
     }
 
-    public ChessColor getActualPlayer() {
-        return actualPlayer;
+    public ChessSquare[][] getBoard() {
+        return board;
     }
 
-    public void setActualPlayer(ChessColor actualPlayer) {
-        this.actualPlayer = actualPlayer;
+    public ChessSquare getSquare(Coordinates coordinates) {
+        return this.board[coordinates.getX()][coordinates.getY()];
+    }
+
+    public ChessColor getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(ChessColor currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
     private Button initButton(int x, int y) {
@@ -56,26 +64,23 @@ public class ChessBoard extends Application {
         button.setPadding(new Insets(0));
         button.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 8px;");
 
-        actionButton(button, x, y);
+        actionButton(button, new Coordinates(x, y));
 
         return button;
     }
 
-    private void actionButton(Button button, int x, int y) {
+    private void actionButton(Button button, Coordinates coordinates) {
         button.setOnAction(actionEvent -> {
-            ChessSquare clickedSquare = board[x][y];
+            ChessSquare clickedSquare = getSquare(coordinates);
             //bouger la piece
             if (selectedSquare != null && selectedSquare.hasPiece()
-                    && selectedSquare.getPiece().getPieceColor() == actualPlayer
+                    && selectedSquare.getPiece().getPieceColor() == currentPlayer
                     && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
-                clickedSquare.setPiece(selectedSquare.getPiece());
-                selectedSquare.removePiece();
-                actualPlayer = actualPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+                move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
+                currentPlayer = currentPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
             } else {
                 selectedSquare = clickedSquare;
             }
-
-            System.out.println(convertToString(x, y));
         });
     }
 
@@ -87,7 +92,7 @@ public class ChessBoard extends Application {
                 Button button = initButton(x, y);
 
                 chessBoardRender.add(button, x * CHESS_SQUARE_SIZE, y * CHESS_SQUARE_SIZE);
-                board[x][y] = new ChessSquare(this, x, y, button);
+                board[x][y] = new ChessSquare(this, new Coordinates(x, y), button);
             }
         }
 
@@ -95,6 +100,7 @@ public class ChessBoard extends Application {
     }
 
     public void loadPieces() {
+        // White
         setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("a1"));
         setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("h1"));
         setPiece(new ChessPieceKnight(ChessColor.WHITE), new Coordinates("b1"));
@@ -108,6 +114,8 @@ public class ChessBoard extends Application {
             setPiece(new ChessPiecePawn(ChessColor.WHITE), firstPawnWhite);
             firstPawnWhite.setX(firstPawnWhite.getX()+1);
         }
+
+        // Black
         setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("a8"));
         setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("h8"));
         setPiece(new ChessPieceKnight(ChessColor.BLACK), new Coordinates("b8"));
@@ -127,22 +135,15 @@ public class ChessBoard extends Application {
         launch();
     }
 
-    public ChessSquare[][] getBoard() {
-        return board;
-    }
 
     public void setPiece(ChessPiece piece, Coordinates coordinates) {
-        this.board[coordinates.getX()][coordinates.getY()].setPiece(piece);
+        getSquare(coordinates).setPiece(piece);
     }
 
-    public void movePiece(ChessPiece piece, int fromX, int fromY, int toX, int toY) {
-
+    public void move(Coordinates from, Coordinates to) {
+        ChessSquare fromSquare = getSquare(from);
+        ChessPiece fromPiece = fromSquare.getPiece();
+        fromSquare.removePiece();
+        setPiece(fromPiece, to);
     }
-
-    public String convertToString(int x, int y) {
-        String xString = String.valueOf((char) ('a' + x));
-        String yString = String.valueOf(CHESS_SQUARE_LENGTH - y);
-        return xString + yString;
-    }
-
 }

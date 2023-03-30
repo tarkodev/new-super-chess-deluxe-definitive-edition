@@ -15,7 +15,6 @@ public class Coordinates implements Cloneable {
     public Coordinates(String coordinates) {
         this.x = getX(coordinates);
         this.y = getY(coordinates);
-        System.out.println(this);
     }
 
     private int getX(String coordinates) {
@@ -34,12 +33,38 @@ public class Coordinates implements Cloneable {
         return y;
     }
 
-    public void setX(int x) {
+    public Coordinates setX(int x) {
         this.x = x;
+        return this;
     }
 
-    public void setY(int y) {
+    public Coordinates setY(int y) {
         this.y = y;
+        return this;
+    }
+
+    public Coordinates addX(int x) {
+        this.x += x;
+        return this;
+    }
+
+    public Coordinates addY(int y) {
+        this.y += y;
+        return this;
+    }
+
+    public Coordinates add(int x, int y) {
+        addX(x);
+        addY(y);
+        return this;
+    }
+
+    public Coordinates clone() {
+        try {
+            return (Coordinates) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -48,4 +73,5 @@ public class Coordinates implements Cloneable {
         String yString = String.valueOf(ChessBoard.CHESS_SQUARE_LENGTH - this.y);
         return xString + yString;
     }
+
 }
