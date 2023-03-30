@@ -70,6 +70,6 @@ public class ChessSquare {
 
     @Override
     public String toString() {
-        return getCoordinates().toString();
+        return coordinates.toString();
     }
 }
