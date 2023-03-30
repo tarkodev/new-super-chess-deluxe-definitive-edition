@@ -76,6 +76,9 @@ public class ChessBoard extends Application {
             if (selectedSquare != null && selectedSquare.hasPiece()
                     && selectedSquare.getPiece().getPieceColor() == currentPlayer
                     && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
+
+
+
                 move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
                 currentPlayer = currentPlayer == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
             } else {
@@ -145,5 +148,14 @@ public class ChessBoard extends Application {
         ChessPiece fromPiece = fromSquare.getPiece();
         fromSquare.removePiece();
         setPiece(fromPiece, to);
+        if (getSquare(to).getPiece() instanceof ChessPiecePawn) {
+            if (to.getY() == 0) {
+                getSquare(to).removePiece();
+                setPiece(new ChessPieceQueen(ChessColor.WHITE), getSquare(to).getCoordinates());
+            } else if (to.getY() == CHESS_SQUARE_LENGTH-1) {
+                getSquare(to).removePiece();
+                setPiece(new ChessPieceQueen(ChessColor.BLACK), to);
+            }
+        }
     }
 }
