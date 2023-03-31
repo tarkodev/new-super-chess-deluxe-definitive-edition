@@ -59,17 +59,19 @@ public class ChessSquare {
         if(piece != null) {
             Image image = new Image(piece.getId() + ".png");
             ImageView imageView = new ImageView(image);
+            imageView.setFitHeight(ChessBoard.CHESS_SQUARE_SIZE);
+            imageView.setFitWidth(ChessBoard.CHESS_SQUARE_SIZE);
             stackPane.getChildren().add(imageView);
         }
 
         if(chessBoard.getSelectedSquare() != null &&chessBoard.getSelectedSquare().getPossibleMoves().contains(this)) {
-            int circleSize = 10;
+            int circleSize = ChessBoard.CHESS_SQUARE_SIZE / 10;
             int innerCircleSize = 0;
             Color circleColor = color == ChessBoard.CHESS_SQUARE_COLOR_1 ? ChessBoard.CHESS_SQUARE_COLOR_2 : ChessBoard.CHESS_SQUARE_COLOR_1;
             if(piece != null && piece.getPieceColor() != chessBoard.getCurrentPlayer()) {
                 circleColor = Color.RED;
-                circleSize = 49;
-                innerCircleSize = 45;
+                circleSize = ChessBoard.CHESS_SQUARE_SIZE * 49 / 100;
+                innerCircleSize = ChessBoard.CHESS_SQUARE_SIZE * 45 / 100;
             }
             Circle circle = new Circle(circleSize);
             Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
