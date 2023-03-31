@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ChessBoard extends Application {
@@ -15,20 +16,28 @@ public class ChessBoard extends Application {
     public static final int CHESS_SQUARE_SIZE = 100;
     public static final int CHESS_SQUARE_LENGTH = 8;
 
-    public static final String CHESS_SQUARE_COLOR_1 = "#EFCCA6";
-    public static final String CHESS_SQUARE_COLOR_2 = "#3C1D18";
-    public static final String CHESS_BACKGROUND_COLOR = "#96755F";
+    public static final Color CHESS_SQUARE_COLOR_1 = Color.valueOf("#EFCCA6");
+    public static final Color CHESS_SQUARE_COLOR_2 = Color.valueOf("#3C1D18");
+    public static final Color CHESS_BACKGROUND_COLOR =
+            new Color(CHESS_SQUARE_COLOR_1.getRed(), CHESS_SQUARE_COLOR_1.getGreen(), CHESS_SQUARE_COLOR_1.getBlue(), 0.5)
+                    .interpolate(CHESS_SQUARE_COLOR_2, 0.5);
 
+    public static final Color CHESS_BACKGROUND_PREVIOUS = Color.YELLOW;
+    public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00");
 
     private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
 
+    public ChessSquare getSelectedSquare() {
+        return selectedSquare;
+    }
+
     @Override
     public void start(Stage stage) {
         GridPane chessBoardRender = initChessBoardRender();
-        chessBoardRender.setStyle("-fx-background-color: " + CHESS_BACKGROUND_COLOR);
+        chessBoardRender.setStyle("-fx-background-color: " + getColorHexa(CHESS_BACKGROUND_COLOR));
 
         loadPieces();
 
@@ -57,35 +66,48 @@ public class ChessBoard extends Application {
 
     public void switchCurrentPlayer() {
         setCurrentPlayer(getCurrentPlayer() == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE);
+        selectedSquare = null;
+    }
+
+    public static String getColorHexa(Color color) {
+        return String.format("#%02X%02X%02X",
+                (int)(color.getRed() * 255),
+                (int)(color.getGreen() * 255),
+                (int)(color.getBlue() * 255));
     }
 
     private Button initButton(int x, int y) {
-        String color = ((x + y) % 2) == 0 ? CHESS_SQUARE_COLOR_1 : CHESS_SQUARE_COLOR_2;
-
         Button button = new Button("");
         button.setPrefWidth(CHESS_SQUARE_SIZE);
         button.setPrefHeight(CHESS_SQUARE_SIZE);
         button.setPadding(new Insets(0));
-        button.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 8px;");
-
         actionButton(button, new Coordinates(x, y));
-
         return button;
     }
 
     private void actionButton(Button button, Coordinates coordinates) {
         button.setOnAction(actionEvent -> {
             ChessSquare clickedSquare = getSquare(coordinates);
-            //bouger la piece
             if (selectedSquare != null && selectedSquare.hasPiece()
                     && selectedSquare.getPiece().getPieceColor() == currentPlayer
                     && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
                 move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
                 switchCurrentPlayer();
-            } else {
+            } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece()) {
+                selectedSquare = null;
+            } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
                 selectedSquare = clickedSquare;
             }
+            render();
         });
+    }
+
+    public void render() {
+        for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
+            for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
+                board[x][y].render();
+            }
+        }
     }
 
     private GridPane initChessBoardRender() {
@@ -93,10 +115,11 @@ public class ChessBoard extends Application {
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                Button button = initButton(x, y);
-
-                chessBoardRender.add(button, x * CHESS_SQUARE_SIZE, y * CHESS_SQUARE_SIZE);
-                board[x][y] = new ChessSquare(this, new Coordinates(x, y), button);
+                Color color = ((x + y) % 2) == 0 ? ChessBoard.CHESS_SQUARE_COLOR_1 : ChessBoard.CHESS_SQUARE_COLOR_2;
+                ChessSquare chessSquare = new ChessSquare(this, color, new Coordinates(x, y), initButton(x, y));
+                chessBoardRender.add(chessSquare.getButton(), x * CHESS_SQUARE_SIZE, y * CHESS_SQUARE_SIZE);
+                board[x][y] = chessSquare;
+                chessSquare.render();
             }
         }
 
@@ -133,6 +156,8 @@ public class ChessBoard extends Application {
             setPiece(new ChessPiecePawn(ChessColor.BLACK), firstPawnBlack);
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
+
+        render();
     }
 
     public static void main(String[] args) {
