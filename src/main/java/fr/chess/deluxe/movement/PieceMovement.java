@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static java.lang.Math.abs;
+
 public enum PieceMovement {
 
     ROOK,
@@ -113,12 +115,14 @@ public enum PieceMovement {
                 //capture "en passant" left then right
                 if (squareCoordinates.getX() > 0 && chessBoard.getSquare(squareCoordinates.clone().add(-1, 0)).hasPiece()
                         && chessSquare.getChessBoard().getToSquare() != null && chessSquare.getChessBoard().getToSquare().getCoordinates().equals(squareCoordinates.clone().add(-1, 0))
-                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn)
+                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn
+                        && abs(chessSquare.getChessBoard().getToSquare().getCoordinates().getY() - chessSquare.getChessBoard().getFromSquare().getCoordinates().getY()) == 2)
                     enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, true, oneForward);
 
                 if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-1 && chessBoard.getSquare(squareCoordinates.clone().add(1, 0)).hasPiece()
                         && chessSquare.getChessBoard().getToSquare() != null && chessSquare.getChessBoard().getToSquare().getCoordinates().equals(squareCoordinates.clone().add(1, 0))
-                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn)
+                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn
+                        && abs(chessSquare.getChessBoard().getToSquare().getCoordinates().getY() - chessSquare.getChessBoard().getFromSquare().getCoordinates().getY()) == 2)
                     enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, false, oneForward);
             }
         }
