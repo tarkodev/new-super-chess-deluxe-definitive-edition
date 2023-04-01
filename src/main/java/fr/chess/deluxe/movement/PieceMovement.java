@@ -116,7 +116,7 @@ public enum PieceMovement {
                         && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn)
                     enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, true, oneForward);
 
-                if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-2 && chessBoard.getSquare(squareCoordinates.clone().add(1, 0)).hasPiece()
+                if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-1 && chessBoard.getSquare(squareCoordinates.clone().add(1, 0)).hasPiece()
                         && chessSquare.getChessBoard().getToSquare() != null && chessSquare.getChessBoard().getToSquare().getCoordinates().equals(squareCoordinates.clone().add(1, 0))
                         && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn)
                     enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, false, oneForward);
