@@ -52,6 +52,8 @@ public class ChessSquare {
         Color renderColor = color;
         if(this.equals(getChessBoard().getSelectedSquare())) {
             renderColor = color.interpolate(ChessBoard.CHESS_BACKGROUND_SELECTED, 0.5);
+        } else if (this.equals(getChessBoard().getFromSquare()) || this.equals(getChessBoard().getToSquare())) {
+            renderColor = color.interpolate(ChessBoard.CHESS_BACKGROUND_PREVIOUS, 0.5);
         }
         button.setStyle("-fx-background-color: " + ChessBoard.getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
         StackPane stackPane = new StackPane();

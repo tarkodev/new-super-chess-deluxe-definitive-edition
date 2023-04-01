@@ -29,9 +29,18 @@ public class ChessBoard extends Application {
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
+    private ChessSquare fromSquare = null, toSquare = null;
 
     public ChessSquare getSelectedSquare() {
         return selectedSquare;
+    }
+
+    public ChessSquare getFromSquare() {
+        return fromSquare;
+    }
+
+    public ChessSquare getToSquare() {
+        return toSquare;
     }
 
     @Override
@@ -88,15 +97,17 @@ public class ChessBoard extends Application {
     private void actionButton(Button button, Coordinates coordinates) {
         button.setOnAction(actionEvent -> {
             ChessSquare clickedSquare = getSquare(coordinates);
-            if (selectedSquare != null && selectedSquare.hasPiece()
-                    && selectedSquare.getPiece().getPieceColor() == currentPlayer
+            if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer
                     && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
                 move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
+                fromSquare = selectedSquare;
+                toSquare = clickedSquare;
                 switchCurrentPlayer();
+            } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece() ||
+                    (selectedSquare != null && clickedSquare.getPiece().getPieceColor() != selectedSquare.getPiece().getPieceColor())) {
+                selectedSquare = null;
             } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
                 selectedSquare = clickedSquare;
-            }else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece() || clickedSquare.getPiece().getPieceColor() != selectedSquare.getPiece().getPieceColor()) {
-                selectedSquare = null;
             }
             render();
         });
