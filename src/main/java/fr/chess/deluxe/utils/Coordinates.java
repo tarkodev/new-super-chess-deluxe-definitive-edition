@@ -67,6 +67,10 @@ public class Coordinates implements Cloneable {
         }
     }
 
+    public boolean equals(Coordinates coord) {
+        return this.getX() == coord.getX() && this.getY() == coord.getY();
+    }
+
     @Override
     public String toString() {
         String xString = String.valueOf((char) ('a' + this.x));

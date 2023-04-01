@@ -1,5 +1,6 @@
 package fr.chess.deluxe;
 
+import fr.chess.deluxe.movement.Move;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
 import javafx.scene.control.Button;
@@ -66,7 +67,7 @@ public class ChessSquare {
             stackPane.getChildren().add(imageView);
         }
 
-        if(chessBoard.getSelectedSquare() != null &&chessBoard.getSelectedSquare().getPossibleMoves().contains(this)) {
+        if(chessBoard.getSelectedSquare() != null && new Move(this, false).isIn(chessBoard.getSelectedSquare().getPossibleMoves())) {
             int circleSize = ChessBoard.CHESS_SQUARE_SIZE / 10;
             int innerCircleSize = 0;
             Color circleColor = color == ChessBoard.CHESS_SQUARE_COLOR_1 ? ChessBoard.CHESS_SQUARE_COLOR_2 : ChessBoard.CHESS_SQUARE_COLOR_1;
@@ -80,15 +81,22 @@ public class ChessSquare {
             Shape donut = Shape.subtract(circle, innerCircle);
             donut.setFill(circleColor);
             stackPane.getChildren().add(donut);
+        } else if (chessBoard.getSelectedSquare() != null && new Move(this, true).isIn(chessBoard.getSelectedSquare().getPossibleMoves())) {
+            Color circleColor = Color.RED;
+            int circleSize = ChessBoard.CHESS_SQUARE_SIZE * 49 / 100;
+            int innerCircleSize = ChessBoard.CHESS_SQUARE_SIZE * 45 / 100;
+            Circle circle = new Circle(circleSize);
+            Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
+            Shape donut = Shape.subtract(circle, innerCircle);
+            donut.setFill(circleColor);
+            stackPane.getChildren().add(donut);
         }
-
-
 
         button.setGraphic(stackPane);
     }
 
-    public List<ChessSquare> getPossibleMoves() {
-        List<ChessSquare> result = new ArrayList<>();
+    public List<Move> getPossibleMoves() {
+        List<Move> result = new ArrayList<>();
         piece.getMovements().forEach(movement -> result.addAll(movement.getPossibleMoves(this)));
         return result;
     }

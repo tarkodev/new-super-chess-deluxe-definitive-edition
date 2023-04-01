@@ -1,5 +1,6 @@
 package fr.chess.deluxe;
 
+import fr.chess.deluxe.movement.Move;
 import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
@@ -22,7 +23,7 @@ public class ChessBoard extends Application {
             new Color(CHESS_SQUARE_COLOR_1.getRed(), CHESS_SQUARE_COLOR_1.getGreen(), CHESS_SQUARE_COLOR_1.getBlue(), 0.5)
                     .interpolate(CHESS_SQUARE_COLOR_2, 0.5);
 
-    public static final Color CHESS_BACKGROUND_PREVIOUS = Color.YELLOW;
+    public static final Color CHESS_BACKGROUND_PREVIOUS = Color.BLUE;
     public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00");
 
     private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
@@ -97,13 +98,26 @@ public class ChessBoard extends Application {
     private void actionButton(Button button, Coordinates coordinates) {
         button.setOnAction(actionEvent -> {
             ChessSquare clickedSquare = getSquare(coordinates);
-            if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer
-                    && selectedSquare.getPossibleMoves().contains(clickedSquare)) {
-                move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
-                fromSquare = selectedSquare;
-                toSquare = clickedSquare;
-                switchCurrentPlayer();
-            } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece() ||
+            if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer) {
+                if (new Move(clickedSquare, false).isIn(selectedSquare.getPossibleMoves())){
+                    move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
+                    fromSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                }
+                else if (new Move(clickedSquare, true).isIn(selectedSquare.getPossibleMoves())) {
+                    move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
+                    if (clickedSquare.getPiece().getPieceColor() == ChessColor.WHITE) {
+                        this.board[clickedSquare.getCoordinates().getX()][clickedSquare.getCoordinates().getY()+1].removePiece();
+                    }
+                    else {
+                        this.board[clickedSquare.getCoordinates().getX()][clickedSquare.getCoordinates().getY()-1].removePiece();
+                    }
+                    fromSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                }
+            } if(selectedSquare == clickedSquare || !clickedSquare.hasPiece() ||
                     (selectedSquare != null && clickedSquare.getPiece().getPieceColor() != selectedSquare.getPiece().getPieceColor())) {
                 selectedSquare = null;
             } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {

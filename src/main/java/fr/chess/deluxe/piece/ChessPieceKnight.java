@@ -1,5 +1,6 @@
 package fr.chess.deluxe.piece;
 
+import fr.chess.deluxe.movement.PieceMovement;
 import fr.chess.deluxe.utils.ChessColor;
 
 import java.util.Set;

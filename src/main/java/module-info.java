@@ -9,4 +9,6 @@ module fr.chess.deluxe {
     opens fr.chess.deluxe.piece to javafx.fxml;
     exports fr.chess.deluxe.utils;
     opens fr.chess.deluxe.utils to javafx.fxml;
+	exports fr.chess.deluxe.movement;
+	opens fr.chess.deluxe.movement to javafx.fxml;
 }
