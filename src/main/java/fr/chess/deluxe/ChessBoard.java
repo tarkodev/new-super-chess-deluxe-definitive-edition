@@ -2,8 +2,10 @@ package fr.chess.deluxe;
 
 import fr.chess.deluxe.movement.Move;
 import fr.chess.deluxe.piece.*;
+import fr.chess.deluxe.utils.CastleInfo;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.Castled;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -31,6 +33,7 @@ public class ChessBoard extends Application {
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
     private ChessSquare fromSquare = null, toSquare = null;
+    private CastleInfo castleInfo;
 
     public ChessSquare getSelectedSquare() {
         return selectedSquare;
@@ -56,6 +59,12 @@ public class ChessBoard extends Application {
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
         stage.show();
+
+        castleInfo = new CastleInfo();
+    }
+
+    public CastleInfo getCastleInfo() {
+        return castleInfo;
     }
 
     public ChessSquare[][] getBoard() {
@@ -99,13 +108,60 @@ public class ChessBoard extends Application {
         button.setOnAction(actionEvent -> {
             ChessSquare clickedSquare = getSquare(coordinates);
             if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer) {
-                if (new Move(clickedSquare, false).isIn(selectedSquare.getPossibleMoves())){
+                if (new Move(clickedSquare, false, new Castled()).isIn(selectedSquare.getPossibleMoves())){
+                    if (selectedSquare.getPiece() instanceof ChessPieceKing) {
+                        if (selectedSquare.getPiece().getPieceColor() == ChessColor.WHITE)
+                            castleInfo.setWhiteKingMoved(true);
+                        else
+                            castleInfo.setBlackKingMoved(true);
+                    } else if (selectedSquare.getPiece() instanceof ChessPieceRook) {
+                        if(selectedSquare.getCoordinates().equals(new Coordinates("a1"))) {
+                            castleInfo.setWhiteLeftRookMoved(true);
+                        } else if (selectedSquare.getCoordinates().equals(new Coordinates(CHESS_SQUARE_LENGTH-1, CHESS_SQUARE_LENGTH-1))) {
+                            castleInfo.setWhiteRightRookMoved(true);
+                        } else if (selectedSquare.getCoordinates().equals(new Coordinates(0, 0))) {
+                            castleInfo.setBlackLeftRookMoved(true);
+                        } else if (selectedSquare.getCoordinates().equals(new Coordinates(CHESS_SQUARE_LENGTH-1, 0))) {
+                            castleInfo.setBlackRightRookMoved(true);
+                        }
+                    }
                     move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
                     fromSquare = selectedSquare;
                     toSquare = clickedSquare;
                     switchCurrentPlayer();
-                }
-                else if (new Move(clickedSquare, true).isIn(selectedSquare.getPossibleMoves())) {
+                } else if (new Move(clickedSquare, false, new Castled(true, false, false, false)).isIn(selectedSquare.getPossibleMoves())) {
+                    board[0][CHESS_SQUARE_LENGTH-1].removePiece();
+                    setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("d1"));
+                    selectedSquare.removePiece();
+                    setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("c1"));
+                    fromSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                } else if (new Move(clickedSquare, false, new Castled(false, true, false, false)).isIn(selectedSquare.getPossibleMoves())) {
+                    board[CHESS_SQUARE_LENGTH-1][CHESS_SQUARE_LENGTH-1].removePiece();
+                    setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("f1"));
+                    fromSquare.removePiece();
+                    setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("g1"));
+                    selectedSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                } else if (new Move(clickedSquare, false, new Castled(false, false, true, false)).isIn(selectedSquare.getPossibleMoves())) {
+                    board[0][0].removePiece();
+                    setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("d8"));
+                    selectedSquare.removePiece();
+                    setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("c8"));
+                    fromSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                } else if (new Move(clickedSquare, false, new Castled(false, false, false, true)).isIn(selectedSquare.getPossibleMoves())) {
+                    board[CHESS_SQUARE_LENGTH-1][0].removePiece();
+                    setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("f8"));
+                    selectedSquare.removePiece();
+                    setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("g8"));
+                    fromSquare = selectedSquare;
+                    toSquare = clickedSquare;
+                    switchCurrentPlayer();
+                } else if (new Move(clickedSquare, true, new Castled()).isIn(selectedSquare.getPossibleMoves())) {
                     move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
                     if (clickedSquare.getPiece().getPieceColor() == ChessColor.WHITE) {
                         this.board[clickedSquare.getCoordinates().getX()][clickedSquare.getCoordinates().getY()+1].removePiece();
@@ -123,6 +179,7 @@ public class ChessBoard extends Application {
             } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
                 selectedSquare = clickedSquare;
             }
+            System.out.println(selectedSquare);
             render();
         });
     }

@@ -5,6 +5,7 @@ import fr.chess.deluxe.ChessSquare;
 import fr.chess.deluxe.piece.ChessPiecePawn;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.Castled;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public enum PieceMovement {
             boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != currentPieceColor;
 
             if(!chessSquareHasPiece || chessSquareHasOppositePieceColor) {
-                possibleSquare.add(new Move(chessSquare, false));
+                possibleSquare.add(new Move(chessSquare, false, new Castled()));
                 if(!chessSquareHasPiece && recursive)
                     laser(board, currentPieceColor, coordinates, coordinatesConsumer, possibleSquare, true);
             }
@@ -41,6 +42,7 @@ public enum PieceMovement {
     }
 
     private void enPassant(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, List<Move> possibleSquare, boolean left, int oneForward) {
+        System.out.println("Test");
         int xPawn = coordinates.getX();
         int yPawn = coordinates.getY();
 
@@ -49,7 +51,7 @@ public enum PieceMovement {
                 int xCaptured = left ? coordinates.getX()-1 : coordinates.getX()+1;
                 ChessSquare chessSquare = board.getBoard()[xCaptured][yPawn+oneForward];
 
-                possibleSquare.add(new Move(chessSquare, true));
+                possibleSquare.add(new Move(chessSquare, true, new Castled()));
             }
         }
     }
@@ -92,6 +94,28 @@ public enum PieceMovement {
                 laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), possibleSquare, false);
                 laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 0), possibleSquare, false);
                 laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), possibleSquare, false);
+                //Castle
+                int KingY;
+                if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE))
+                    KingY = ChessBoard.CHESS_SQUARE_LENGTH-1;
+                else {
+                    KingY = 0;
+                }
+                //left Castle
+                if (!(chessBoard.getBoard()[1][KingY].hasPiece()) && !(chessBoard.getBoard()[2][KingY].hasPiece()) && !(chessBoard.getBoard()[3][KingY].hasPiece())) {  //no piece between the king and the rook
+                    if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE) && !(chessBoard.getCastleInfo().getWhiteKingMoved() || chessBoard.getCastleInfo().getWhiteLeftRookMoved())) //neither the rook nor the king moved
+                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(1, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(true, false, false, false)));
+                    else if (chessBoard.getCurrentPlayer().equals(ChessColor.BLACK) && !(chessBoard.getCastleInfo().getBlackKingMoved() || chessBoard.getCastleInfo().getBlackLeftRookMoved()))    //neither the rook nor the king moved
+                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(1, 0)), false, new Castled(false, false, true, false)));
+                }
+                //right Castle
+                if (!(chessBoard.getBoard()[ChessBoard.CHESS_SQUARE_LENGTH-3][KingY].hasPiece()) && !(chessBoard.getBoard()[ChessBoard.CHESS_SQUARE_LENGTH-2][KingY].hasPiece())) {  //no piece between the king and the rook
+                    if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE) && !(chessBoard.getCastleInfo().getWhiteKingMoved() || chessBoard.getCastleInfo().getWhiteRightRookMoved())) //neither the rook nor the king moved
+                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(false, true, false, false)));
+                    else if (chessBoard.getCurrentPlayer().equals(ChessColor.BLACK) && !(chessBoard.getCastleInfo().getBlackKingMoved() || chessBoard.getCastleInfo().getBlackRightRookMoved()))    //neither the rook nor the king moved
+                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, 0)), false, new Castled(false, false, false, true)));
+                }
+
             }
             case PAWN -> {
                 int oneForward = squarePieceColor == ChessColor.WHITE ? -1 : 1;
