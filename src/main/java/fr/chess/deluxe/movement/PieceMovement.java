@@ -25,24 +25,6 @@ public enum PieceMovement {
     KING,
     ;
 
-    /*private void laser(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Consumer<Coordinates> coordinatesConsumer, Set<ChessSquare> possibleSquare, boolean recursive) {
-        coordinatesConsumer.accept(coordinates);
-        int x = coordinates.getX();
-        int y = coordinates.getY();
-
-        if (0 <= x && x <= ChessBoard.CHESS_SQUARE_LENGTH-1 && 0 <= y && y <= ChessBoard.CHESS_SQUARE_LENGTH-1) {
-            ChessSquare chessSquare = board.getBoard()[x][y];
-            boolean chessSquareHasPiece = chessSquare.getPiece() != null;
-            boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != currentPieceColor;
-
-            if(!chessSquareHasPiece || chessSquareHasOppositePieceColor) {
-                possibleSquare.add(chessSquare);
-                if(!chessSquareHasPiece && recursive)
-                    laser(board, currentPieceColor, coordinates, coordinatesConsumer, possibleSquare, true);
-            }
-        }
-    }*/
-
     private void check(ChessBoard board, ChessColor playerPieceColor, Coordinates coordinates, Consumer<Coordinates> targetConsumer, boolean recursive,
                        Map<Coordinates, Consumer<Coordinates>> possibleTargetTriggerEventMap, Consumer<Coordinates> triggerEvent, boolean canEatAlly) {
         Coordinates fromCoordinates = coordinates.clone();
@@ -101,23 +83,6 @@ public enum PieceMovement {
                        Map<Coordinates, Consumer<Coordinates>> possibleTargetEventMap) {
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, PieceMovementRules.DEFAULT);
     }
-
-
-
-       /* private void enPassant(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Set<ChessSquare> possibleSquare, boolean left, int oneForward) {
-        System.out.println("Test");
-        int xPawn = coordinates.getX();
-        int yPawn = coordinates.getY();
-
-        if ((currentPieceColor == ChessColor.WHITE && yPawn == 3) || (currentPieceColor == ChessColor.BLACK && yPawn == ChessBoard.CHESS_SQUARE_LENGTH-4)) {
-            if ((xPawn == 0 && !left) || 1 <= xPawn && xPawn <= ChessBoard.CHESS_SQUARE_LENGTH - 2 || (xPawn == ChessBoard.CHESS_SQUARE_LENGTH - 1 && left)) {
-                int xCaptured = left ? coordinates.getX()-1 : coordinates.getX()+1;
-                ChessSquare chessSquare = board.getBoard()[xCaptured][yPawn+oneForward];
-
-                possibleSquare.add(chessSquare);
-            }
-        }
-    }*/
 
     public Map<Coordinates, Consumer<Coordinates>> getPossibleSquare(ChessSquare chessSquare) {
         ChessBoard chessBoard = chessSquare.getChessBoard();
@@ -194,24 +159,6 @@ public enum PieceMovement {
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(kingRight2), false, possibleSquare, PieceMovementRules.CASTLING);
                     }
                 }
-
-            
-
-              /*  //left Castle
-                if (!(chessBoard.getBoard()[1][KingY].hasPiece()) && !(chessBoard.getBoard()[2][KingY].hasPiece()) && !(chessBoard.getBoard()[3][KingY].hasPiece())) {  //no piece between the king and the rook
-                    if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE) && !(chessBoard.getCastleInfo().getWhiteKingMoved() || chessBoard.getCastleInfo().getWhiteLeftRookMoved())) //neither the rook nor the king moved
-                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(1, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(true, false, false, false)));
-                    else if (chessBoard.getCurrentPlayer().equals(ChessColor.BLACK) && !(chessBoard.getCastleInfo().getBlackKingMoved() || chessBoard.getCastleInfo().getBlackLeftRookMoved()))    //neither the rook nor the king moved
-                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(1, 0)), false, new Castled(false, false, true, false)));
-                }
-                //right Castle
-                if (!(chessBoard.getBoard()[ChessBoard.CHESS_SQUARE_LENGTH-3][KingY].hasPiece()) && !(chessBoard.getBoard()[ChessBoard.CHESS_SQUARE_LENGTH-2][KingY].hasPiece())) {  //no piece between the king and the rook
-                    if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE) && !(chessBoard.getCastleInfo().getWhiteKingMoved() || chessBoard.getCastleInfo().getWhiteRightRookMoved())) //neither the rook nor the king moved
-                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(false, true, false, false)));
-                    else if (chessBoard.getCurrentPlayer().equals(ChessColor.BLACK) && !(chessBoard.getCastleInfo().getBlackKingMoved() || chessBoard.getCastleInfo().getBlackRightRookMoved()))    //neither the rook nor the king moved
-                        possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, 0)), false, new Castled(false, false, false, true)));
-                }*/
-
             }
             case PAWN -> {
                 int oneForward = squarePieceColor == ChessColor.WHITE ? -1 : 1;
