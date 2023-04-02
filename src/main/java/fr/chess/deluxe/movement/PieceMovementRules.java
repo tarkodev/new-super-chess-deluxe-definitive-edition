@@ -4,5 +4,6 @@ public enum PieceMovementRules {
 
     DEFAULT,
     EN_PASSANT,
-    CASTLING;
+    CASTLING,
+    PROMOTION
 }
