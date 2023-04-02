@@ -1,11 +1,9 @@
 package fr.chess.deluxe;
 
-import fr.chess.deluxe.movement.Move;
+import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.*;
-import fr.chess.deluxe.utils.CastleInfo;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
-import fr.chess.deluxe.utils.Castled;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -14,37 +12,39 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessBoard extends Application {
 
     public static final int CHESS_SQUARE_SIZE = 100;
     public static final int CHESS_SQUARE_LENGTH = 8;
 
-    public static final Color CHESS_SQUARE_COLOR_1 = Color.valueOf("#EFCCA6");
-    public static final Color CHESS_SQUARE_COLOR_2 = Color.valueOf("#3C1D18");
+    public static final Color CHESS_SQUARE_COLOR_1 = Color.valueOf("#EFCCA6"); //White
+    public static final Color CHESS_SQUARE_COLOR_2 = Color.valueOf("#3C1D18"); //Black
     public static final Color CHESS_BACKGROUND_COLOR =
             new Color(CHESS_SQUARE_COLOR_1.getRed(), CHESS_SQUARE_COLOR_1.getGreen(), CHESS_SQUARE_COLOR_1.getBlue(), 0.5)
-                    .interpolate(CHESS_SQUARE_COLOR_2, 0.5);
+                    .interpolate(CHESS_SQUARE_COLOR_2, 0.5); //Mix between Black and White
 
     public static final Color CHESS_BACKGROUND_PREVIOUS = Color.BLUE;
-    public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00");
+    public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00"); //Green
 
     private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
+    private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
-    private ChessSquare fromSquare = null, toSquare = null;
-    private CastleInfo castleInfo;
+
+    public List<PieceMovementLog> getPieceMovementLogs() {
+        return pieceMovementLogs;
+    }
+
+    public PieceMovementLog getLastPieceMovementLog() {
+        return pieceMovementLogs.isEmpty() ? null : pieceMovementLogs.get(pieceMovementLogs.size()-1);
+    }
 
     public ChessSquare getSelectedSquare() {
         return selectedSquare;
-    }
-
-    public ChessSquare getFromSquare() {
-        return fromSquare;
-    }
-
-    public ChessSquare getToSquare() {
-        return toSquare;
     }
 
     @Override
@@ -59,20 +59,10 @@ public class ChessBoard extends Application {
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
         stage.show();
-
-        castleInfo = new CastleInfo();
-    }
-
-    public CastleInfo getCastleInfo() {
-        return castleInfo;
-    }
-
-    public ChessSquare[][] getBoard() {
-        return board;
     }
 
     public ChessSquare getSquare(Coordinates coordinates) {
-        return this.board[coordinates.getX()][coordinates.getY()];
+        return coordinates.isValid() ? this.board[coordinates.getX()][coordinates.getY()] : null;
     }
 
     public ChessColor getCurrentPlayer() {
@@ -107,7 +97,7 @@ public class ChessBoard extends Application {
     private void actionButton(Button button, Coordinates coordinates) {
         button.setOnAction(actionEvent -> {
             ChessSquare clickedSquare = getSquare(coordinates);
-            if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer) {
+            /*if (selectedSquare != null && selectedSquare.getPiece().getPieceColor() == currentPlayer) {
                 if (new Move(clickedSquare, false, new Castled()).isIn(selectedSquare.getPossibleMoves())){
                     if (selectedSquare.getPiece() instanceof ChessPieceKing) {
                         if (selectedSquare.getPiece().getPieceColor() == ChessColor.WHITE)
@@ -179,7 +169,20 @@ public class ChessBoard extends Application {
             } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
                 selectedSquare = clickedSquare;
             }
-            System.out.println(selectedSquare);
+            System.out.println(selectedSquare);*/
+            if (selectedSquare != null && selectedSquare.hasPiece()
+                    && selectedSquare.getPiece().getPieceColor() == currentPlayer
+                    && selectedSquare.getPossibleMoves().containsKey(clickedSquare.getCoordinates())) {
+                selectedSquare.getPossibleMoves().get(clickedSquare.getCoordinates()).accept(clickedSquare.getCoordinates());
+            //move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
+
+                switchCurrentPlayer();
+            } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece()) {
+                selectedSquare = null;
+            } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
+                selectedSquare = clickedSquare;
+            }
+
             render();
         });
     }
@@ -251,12 +254,12 @@ public class ChessBoard extends Application {
         getSquare(coordinates).setPiece(piece);
     }
 
-    public void move(Coordinates from, Coordinates to) {
+   /* public void move(Coordinates from, Coordinates to) {
         ChessSquare fromSquare = getSquare(from);
         ChessPiece fromPiece = fromSquare.getPiece();
         fromSquare.removePiece();
         setPiece(fromPiece, to);
-        if (getSquare(to).getPiece() instanceof ChessPiecePawn) {
+        if (fromPiece instanceof ChessPiecePawn) {
             if (to.getY() == 0) {
                 getSquare(to).removePiece();
                 setPiece(new ChessPieceQueen(ChessColor.WHITE), getSquare(to).getCoordinates());
@@ -265,5 +268,7 @@ public class ChessBoard extends Application {
                 setPiece(new ChessPieceQueen(ChessColor.BLACK), to);
             }
         }
-    }
+
+
+    }*/
 }

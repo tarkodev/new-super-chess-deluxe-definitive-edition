@@ -1,7 +1,6 @@
-package fr.chess.deluxe.movement;
+package fr.chess.deluxe.trash;
 
 import fr.chess.deluxe.ChessSquare;
-import fr.chess.deluxe.utils.Castled;
 
 import java.util.List;
 

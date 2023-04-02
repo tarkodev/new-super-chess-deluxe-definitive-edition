@@ -2,6 +2,8 @@ package fr.chess.deluxe.utils;
 
 import fr.chess.deluxe.ChessBoard;
 
+import java.util.Objects;
+
 public class Coordinates implements Cloneable {
 
     private int x;
@@ -43,6 +45,12 @@ public class Coordinates implements Cloneable {
         return this;
     }
 
+    public Coordinates set(Coordinates coordinates) {
+        setX(coordinates.getX());
+        setY(coordinates.getY());
+        return this;
+    }
+
     public Coordinates addX(int x) {
         this.x += x;
         return this;
@@ -57,6 +65,11 @@ public class Coordinates implements Cloneable {
         addX(x);
         addY(y);
         return this;
+    }
+
+    public boolean isValid() {
+        return 0 <= x && x < ChessBoard.CHESS_SQUARE_LENGTH
+                &&  0 <= y && y < ChessBoard.CHESS_SQUARE_LENGTH;
     }
 
     public Coordinates clone() {
@@ -78,4 +91,16 @@ public class Coordinates implements Cloneable {
         return xString + yString;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Coordinates that = (Coordinates) o;
+        return x == that.x && y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

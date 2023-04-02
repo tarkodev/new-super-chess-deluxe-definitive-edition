@@ -1,4 +1,4 @@
-package fr.chess.deluxe.utils;
+package fr.chess.deluxe.trash;
 
 public class CastleInfo {
 	private boolean whiteKingMoved;

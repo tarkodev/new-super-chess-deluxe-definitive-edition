@@ -4,19 +4,31 @@ import fr.chess.deluxe.ChessBoard;
 import javafx.scene.paint.Color;
 
 public enum ChessColor {
-    WHITE('w', ChessBoard.CHESS_SQUARE_COLOR_1),
-    BLACK('b', ChessBoard.CHESS_SQUARE_COLOR_1);
+    WHITE(7, -1, 'w', ChessBoard.CHESS_SQUARE_COLOR_1),
+    BLACK(0, 1, 'b', ChessBoard.CHESS_SQUARE_COLOR_2);
 
-    private final char c;
+    private final char character;
+    private final int firstPiecesLine;
+    private final int oneForward;
     private final Color color;
 
-    ChessColor(char c, Color color) {
-        this.c = c;
+    ChessColor(int firstLine, int oneForward, char character, Color color) {
+        this.character = character;
+        this.firstPiecesLine = firstLine;
+        this.oneForward = oneForward;
         this.color = color;
     }
 
     public char getChar() {
-        return c;
+        return character;
+    }
+
+    public int getOneForward() {
+        return oneForward;
+    }
+
+    public int getFirstPiecesLine() {
+        return firstPiecesLine;
     }
 
     public Color getColor() {

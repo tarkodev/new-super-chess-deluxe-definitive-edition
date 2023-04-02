@@ -2,13 +2,15 @@ package fr.chess.deluxe.movement;
 
 import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.ChessSquare;
+import fr.chess.deluxe.piece.ChessPiece;
+import fr.chess.deluxe.piece.ChessPieceKing;
 import fr.chess.deluxe.piece.ChessPiecePawn;
+import fr.chess.deluxe.piece.ChessPieceRook;
 import fr.chess.deluxe.utils.ChessColor;
+import fr.chess.deluxe.utils.ChessDirection;
 import fr.chess.deluxe.utils.Coordinates;
-import fr.chess.deluxe.utils.Castled;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
@@ -23,7 +25,7 @@ public enum PieceMovement {
     KING,
     ;
 
-    private void laser(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Consumer<Coordinates> coordinatesConsumer, List<Move> possibleSquare, boolean recursive) {
+    /*private void laser(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Consumer<Coordinates> coordinatesConsumer, Set<ChessSquare> possibleSquare, boolean recursive) {
         coordinatesConsumer.accept(coordinates);
         int x = coordinates.getX();
         int y = coordinates.getY();
@@ -34,14 +36,75 @@ public enum PieceMovement {
             boolean chessSquareHasOppositePieceColor = chessSquareHasPiece && chessSquare.getPiece().getPieceColor() != currentPieceColor;
 
             if(!chessSquareHasPiece || chessSquareHasOppositePieceColor) {
-                possibleSquare.add(new Move(chessSquare, false, new Castled()));
+                possibleSquare.add(chessSquare);
                 if(!chessSquareHasPiece && recursive)
                     laser(board, currentPieceColor, coordinates, coordinatesConsumer, possibleSquare, true);
             }
         }
+    }*/
+
+    private void check(ChessBoard board, Coordinates coordinates, Consumer<Coordinates> targetConsumer, boolean recursive,
+                       Map<Coordinates, Consumer<Coordinates>> possibleTargetTriggerEventMap, Consumer<Coordinates> triggerEvent, boolean canEatAlly) {
+        Coordinates fromCoordinates = coordinates.clone();
+        targetConsumer.accept(coordinates);
+        Coordinates toCoordinates = coordinates.clone();
+
+        if (toCoordinates.isValid()) {
+            ChessSquare fromSquare = board.getSquare(fromCoordinates);
+            ChessPiece fromPiece = fromSquare.getPiece();
+
+            ChessSquare toSquare = board.getSquare(toCoordinates);
+            ChessPiece toPiece = toSquare.getPiece();
+
+            boolean toHasPiece = toPiece != null;
+            boolean toHasOppositePieceColor = toHasPiece && fromPiece != null && toPiece.getPieceColor() != fromPiece.getPieceColor();
+
+            if(canEatAlly || (!toHasPiece || toHasOppositePieceColor)) {
+                possibleTargetTriggerEventMap.put(toCoordinates, triggerEvent);
+
+                if(!toHasPiece && recursive)
+                    check(board, coordinates, targetConsumer, true, possibleTargetTriggerEventMap, triggerEvent,  canEatAlly);
+            }
+        }
     }
 
-    private void enPassant(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, List<Move> possibleSquare, boolean left, int oneForward) {
+    private void check(ChessBoard board, Coordinates coordinates, Consumer<Coordinates> target, boolean recursive,
+                       Map<Coordinates, Consumer<Coordinates>> possibleTargetEventMap, PieceMovementRules rules) {
+        Coordinates fromCoordinates = coordinates.clone();
+        ChessSquare fromSquare = board.getSquare(fromCoordinates);
+        ChessPiece fromPiece = fromSquare.getPiece();
+        int oneForward = fromPiece.getPieceColor().getOneForward();
+        check(board, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
+            fromSquare.removePiece();
+            switch (rules) {
+                case EN_PASSANT -> {
+                    board.setPiece(fromPiece, toCoordinates);
+                    board.getSquare(toCoordinates.add(0, -oneForward)).removePiece();
+                }
+                case CASTLING -> {
+                    ChessDirection chessDirection = fromCoordinates.getX() - toCoordinates.getX() > 0 ? ChessDirection.LEFT : ChessDirection.RIGHT;
+                    ChessSquare toRookSquare = board.getSquare(toCoordinates.clone().setX(chessDirection.getFirstLine()));
+                    ChessPiece toRookPiece = toRookSquare.getPiece();
+                    toRookSquare.removePiece();
+                    board.setPiece(fromPiece, fromCoordinates.clone().addX(chessDirection.getOneForward()*2));
+                    board.setPiece(toRookPiece, fromCoordinates.clone().addX(chessDirection.getOneForward()));
+                }
+                default -> {
+                    board.setPiece(fromPiece, toCoordinates);
+                }
+            }
+            board.getPieceMovementLogs().add(new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates));
+        }, rules == PieceMovementRules.CASTLING);
+    }
+
+    private void check(ChessBoard board, Coordinates coordinates, Consumer<Coordinates> target, boolean recursive,
+                       Map<Coordinates, Consumer<Coordinates>> possibleTargetEventMap) {
+        check(board, coordinates, target, recursive, possibleTargetEventMap, PieceMovementRules.DEFAULT);
+    }
+
+
+
+       /* private void enPassant(ChessBoard board, ChessColor currentPieceColor, Coordinates coordinates, Set<ChessSquare> possibleSquare, boolean left, int oneForward) {
         System.out.println("Test");
         int xPawn = coordinates.getX();
         int yPawn = coordinates.getY();
@@ -51,57 +114,90 @@ public enum PieceMovement {
                 int xCaptured = left ? coordinates.getX()-1 : coordinates.getX()+1;
                 ChessSquare chessSquare = board.getBoard()[xCaptured][yPawn+oneForward];
 
-                possibleSquare.add(new Move(chessSquare, true, new Castled()));
+                possibleSquare.add(chessSquare);
             }
         }
-    }
+    }*/
 
-    public List<Move> getPossibleMoves(ChessSquare chessSquare) {
+    public Map<Coordinates, Consumer<Coordinates>> getPossibleSquare(ChessSquare chessSquare) {
         ChessBoard chessBoard = chessSquare.getChessBoard();
         ChessColor squarePieceColor = chessSquare.getPiece().getPieceColor();
         Coordinates squareCoordinates = chessSquare.getCoordinates();
 
-        List<Move> possibleSquare = new ArrayList<>();
+        Map<Coordinates, Consumer<Coordinates>> possibleSquare = new HashMap<>();
         switch (this) {
             case ROOK -> {
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(-1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addX(1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addX(-1), possibleSquare, true);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addY(-1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addX(1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addY(1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addX(-1), true, possibleSquare);
+
             }
             case BISHOP -> {
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), possibleSquare, true);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), possibleSquare, true);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), true, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), true, possibleSquare);
+                break;
             }
             case KNIGHT -> {
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -2), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, -1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, 1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 2), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 2), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, 1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, -1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -2), possibleSquare, false);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, -2), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(2, -1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(2, 1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, 2), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 2), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-2, 1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-2, -1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -2), false, possibleSquare);
             }
             case KING -> {
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(0, -1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 0), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(0, 1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 0), possibleSquare, false);
-                laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), possibleSquare, false);
-                //Castle
-                int KingY;
-                if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE))
-                    KingY = ChessBoard.CHESS_SQUARE_LENGTH-1;
-                else {
-                    KingY = 0;
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(0, -1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, -1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, 0), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, 1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(0, 1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 1), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 0), false, possibleSquare);
+                check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -1), false, possibleSquare);
+
+
+                Coordinates kingLeft1 = new Coordinates(0, squarePieceColor.getFirstPiecesLine());
+                Coordinates kingLeft2 = new Coordinates(1, squarePieceColor.getFirstPiecesLine());
+                Coordinates kingLeft3 = new Coordinates(2, squarePieceColor.getFirstPiecesLine());
+                Coordinates kingLeft4 = new Coordinates(3, squarePieceColor.getFirstPiecesLine());
+
+
+                Coordinates kingRight3 = new Coordinates(5, squarePieceColor.getFirstPiecesLine());
+                Coordinates kingRight2 = new Coordinates(6, squarePieceColor.getFirstPiecesLine());
+                Coordinates kingRight1 = new Coordinates(7, squarePieceColor.getFirstPiecesLine());
+
+                //If the king has not moved
+                if (chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
+                                && pieceMovementLog.getPiece() instanceof ChessPieceKing)) {
+
+                    //If the left tower has not moved
+                    if (!chessBoard.getSquare(kingLeft2).hasPiece() && !chessBoard.getSquare(kingLeft3).hasPiece() && !chessBoard.getSquare(kingLeft4).hasPiece() &&
+                            chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
+                                    && pieceMovementLog.getPiece() instanceof ChessPieceRook
+                                    && pieceMovementLog.getFromCoordinates().equals(kingLeft1))) {
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft1), false, possibleSquare, PieceMovementRules.CASTLING);
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft2), false, possibleSquare, PieceMovementRules.CASTLING);
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft3), false, possibleSquare, PieceMovementRules.CASTLING);
+                    }
+
+                    //If the right tower has not moved
+                    if (!chessBoard.getSquare(kingRight3).hasPiece() && !chessBoard.getSquare(kingRight2).hasPiece() &&
+                            chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
+                                    && pieceMovementLog.getPiece() instanceof ChessPieceRook
+                                    && pieceMovementLog.getFromCoordinates().equals(kingRight1))) {
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(kingRight1), false, possibleSquare, PieceMovementRules.CASTLING);
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(kingRight2), false, possibleSquare, PieceMovementRules.CASTLING);
+                    }
                 }
-                //left Castle
+
+            
+
+              /*  //left Castle
                 if (!(chessBoard.getBoard()[1][KingY].hasPiece()) && !(chessBoard.getBoard()[2][KingY].hasPiece()) && !(chessBoard.getBoard()[3][KingY].hasPiece())) {  //no piece between the king and the rook
                     if (chessBoard.getCurrentPlayer().equals(ChessColor.WHITE) && !(chessBoard.getCastleInfo().getWhiteKingMoved() || chessBoard.getCastleInfo().getWhiteLeftRookMoved())) //neither the rook nor the king moved
                         possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(1, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(true, false, false, false)));
@@ -114,7 +210,7 @@ public enum PieceMovement {
                         possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, ChessBoard.CHESS_SQUARE_LENGTH-1)), false, new Castled(false, true, false, false)));
                     else if (chessBoard.getCurrentPlayer().equals(ChessColor.BLACK) && !(chessBoard.getCastleInfo().getBlackKingMoved() || chessBoard.getCastleInfo().getBlackRightRookMoved()))    //neither the rook nor the king moved
                         possibleSquare.add(new Move(chessBoard.getSquare(new Coordinates(ChessBoard.CHESS_SQUARE_LENGTH-2, 0)), false, new Castled(false, false, false, true)));
-                }
+                }*/
 
             }
             case PAWN -> {
@@ -123,31 +219,41 @@ public enum PieceMovement {
 
                 //normal advancement, 1 then 2 squares
                  if (!chessBoard.getSquare(squareCoordinates.clone().addY(oneForward)).hasPiece()) {
-                     laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), possibleSquare, false);
+                     check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), false, possibleSquare);
                      if (squareCoordinates.getY() == secondLine && !chessBoard.getSquare(squareCoordinates.clone().addY(oneForward*2)).hasPiece()) {
-                         laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward*2), possibleSquare, false);
+                         check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward*2), false, possibleSquare);
                      }
                  }
 
                  //normal capture left then right
                 if (squareCoordinates.getX() > 0 && chessBoard.getSquare(squareCoordinates.clone().add(-1, oneForward)).hasPiece())
-                    laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneForward), possibleSquare, false);
+                    check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneForward), false, possibleSquare);
 
                 if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-2 && chessBoard.getSquare(squareCoordinates.clone().add(1, oneForward)).hasPiece())
-                    laser(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneForward), possibleSquare, false);
+                    check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneForward), false, possibleSquare);
 
                 //capture "en passant" left then right
-                if (squareCoordinates.getX() > 0 && chessBoard.getSquare(squareCoordinates.clone().add(-1, 0)).hasPiece()
-                        && chessSquare.getChessBoard().getToSquare() != null && chessSquare.getChessBoard().getToSquare().getCoordinates().equals(squareCoordinates.clone().add(-1, 0))
-                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn
-                        && abs(chessSquare.getChessBoard().getToSquare().getCoordinates().getY() - chessSquare.getChessBoard().getFromSquare().getCoordinates().getY()) == 2)
-                    enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, true, oneForward);
+                if(chessBoard.getLastPieceMovementLog() != null) {
+                    PieceMovementLog lastPieceMovementLog = chessBoard.getLastPieceMovementLog();
 
-                if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-1 && chessBoard.getSquare(squareCoordinates.clone().add(1, 0)).hasPiece()
-                        && chessSquare.getChessBoard().getToSquare() != null && chessSquare.getChessBoard().getToSquare().getCoordinates().equals(squareCoordinates.clone().add(1, 0))
-                        && chessSquare.getChessBoard().getToSquare().getPiece() instanceof ChessPiecePawn
-                        && abs(chessSquare.getChessBoard().getToSquare().getCoordinates().getY() - chessSquare.getChessBoard().getFromSquare().getCoordinates().getY()) == 2)
-                    enPassant(chessBoard, squarePieceColor, squareCoordinates, possibleSquare, false, oneForward);
+                    Coordinates enPassantLeft = squareCoordinates.clone().add(-1, 0);
+                    if (chessBoard.getSquare(enPassantLeft) != null && chessBoard.getSquare(enPassantLeft).hasPiece()
+                            && lastPieceMovementLog.getToCoordinates().equals(enPassantLeft)
+                            && lastPieceMovementLog.getPiece() instanceof ChessPiecePawn
+                            && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
+                        Coordinates enPassantMovement = squareCoordinates.clone().add(-1, oneForward);
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
+                    }
+
+                    Coordinates enPassantRight = squareCoordinates.clone().add(1, 0);
+                    if (chessBoard.getSquare(enPassantRight) != null && chessBoard.getSquare(enPassantRight).hasPiece()
+                            && lastPieceMovementLog.getToCoordinates().equals(enPassantRight)
+                            && lastPieceMovementLog.getPiece() instanceof ChessPiecePawn
+                            && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
+                        Coordinates enPassantRightMovement = squareCoordinates.clone().add(1, oneForward);
+                        check(chessBoard, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantRightMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
+                    }
+                }
             }
         }
 
