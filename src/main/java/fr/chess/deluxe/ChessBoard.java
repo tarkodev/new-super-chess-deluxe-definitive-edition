@@ -180,22 +180,4 @@ public class ChessBoard extends Application {
     public void setPiece(ChessPiece piece, Coordinates coordinates) {
         getSquare(coordinates).setPiece(piece);
     }
-
-   /* public void move(Coordinates from, Coordinates to) {
-        ChessSquare fromSquare = getSquare(from);
-        ChessPiece fromPiece = fromSquare.getPiece();
-        fromSquare.removePiece();
-        setPiece(fromPiece, to);
-        if (fromPiece instanceof ChessPiecePawn) {
-            if (to.getY() == 0) {
-                getSquare(to).removePiece();
-                setPiece(new ChessPieceQueen(ChessColor.WHITE), getSquare(to).getCoordinates());
-            } else if (to.getY() == CHESS_SQUARE_LENGTH-1) {
-                getSquare(to).removePiece();
-                setPiece(new ChessPieceQueen(ChessColor.BLACK), to);
-            }
-        }
-
-
-    }*/
 }
