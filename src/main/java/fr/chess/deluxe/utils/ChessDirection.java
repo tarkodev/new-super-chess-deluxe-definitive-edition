@@ -6,16 +6,16 @@ public enum ChessDirection {
     RIGHT(7, 1);
 
     private final int firstLine;
-    private final int oneForward;
+    private final int oneStep;
 
 
-    ChessDirection(int firstLine, int oneForward) {
+    ChessDirection(int firstLine, int oneStep) {
         this.firstLine = firstLine;
-        this.oneForward = oneForward;
+        this.oneStep = oneStep;
     }
 
-    public int getOneForward() {
-        return oneForward;
+    public int getOneStep() {
+        return oneStep;
     }
 
     public int getFirstLine() {

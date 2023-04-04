@@ -9,13 +9,13 @@ public enum ChessColor {
 
     private final char character;
     private final int firstPiecesLine;
-    private final int oneForward;
+    private final int oneStep;
     private final Color color;
 
-    ChessColor(int firstLine, int oneForward, char character, Color color) {
+    ChessColor(int firstLine, int oneStep, char character, Color color) {
         this.character = character;
         this.firstPiecesLine = firstLine;
-        this.oneForward = oneForward;
+        this.oneStep = oneStep;
         this.color = color;
     }
 
@@ -23,8 +23,8 @@ public enum ChessColor {
         return character;
     }
 
-    public int getOneForward() {
-        return oneForward;
+    public int getOneStep() {
+        return oneStep;
     }
 
     public int getFirstPiecesLine() {

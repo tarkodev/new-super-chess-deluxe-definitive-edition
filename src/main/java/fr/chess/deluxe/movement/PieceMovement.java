@@ -49,9 +49,10 @@ public enum PieceMovement {
         Coordinates fromCoordinates = coordinates.clone();
         ChessSquare fromSquare = board.getSquare(fromCoordinates);
         ChessPiece fromPiece = fromSquare.getPiece();
-        int oneForward = fromPiece.getPieceColor().getOneForward();
+        int oneForward = fromPiece.getPieceColor().getOneStep();
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
             fromSquare.removePiece();
+            PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates);
             switch (rules) {
                 case EN_PASSANT -> {
                     board.setPiece(fromPiece, toCoordinates);
@@ -59,18 +60,20 @@ public enum PieceMovement {
                 }
                 case CASTLING -> {
                     ChessDirection chessDirection = fromCoordinates.getX() - toCoordinates.getX() > 0 ? ChessDirection.LEFT : ChessDirection.RIGHT;
-                    ChessSquare toRookSquare = board.getSquare(toCoordinates.clone().setX(chessDirection.getFirstLine()));
-                    ChessPiece toRookPiece = toRookSquare.getPiece();
-                    toRookSquare.removePiece();
-                    board.setPiece(fromPiece, fromCoordinates.clone().addX(chessDirection.getOneForward()*2));
-                    board.setPiece(toRookPiece, fromCoordinates.clone().addX(chessDirection.getOneForward()));
+                    ChessSquare fromRookSquare = board.getSquare(toCoordinates.clone().setX(chessDirection.getFirstLine()));
+                    ChessPiece fromRookPiece = fromRookSquare.getPiece();
+                    fromRookSquare.removePiece();
+                    Coordinates toKingCoordinates = fromCoordinates.clone().addX(chessDirection.getOneStep()*2);
+                    board.setPiece(fromPiece, toKingCoordinates);
+                    board.setPiece(fromRookPiece, fromCoordinates.clone().addX(chessDirection.getOneStep()));
+                    pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates);
                 }
 
                 case PROMOTION -> board.setPiece(new ChessPieceQueen(playerPieceColor), toCoordinates);
 
                 default -> board.setPiece(fromPiece, toCoordinates);
             }
-            board.getPieceMovementLogs().add(new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates));
+            board.getPieceMovementLogs().add(pieceMovementLog);
         }, rules == PieceMovementRules.CASTLING);
     }
 
