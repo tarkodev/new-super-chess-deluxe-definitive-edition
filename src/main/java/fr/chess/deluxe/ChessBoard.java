@@ -8,14 +8,15 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
-public class ChessBoard extends Application {
+public class ChessBoard extends Application implements Cloneable{
 
     public static final int CHESS_SQUARE_SIZE = 100;
     public static final int CHESS_SQUARE_LENGTH = 8;
@@ -58,6 +59,8 @@ public class ChessBoard extends Application {
         stage.setResizable(false);
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
+        Image logo = new Image("logo.png");
+        stage.getIcons().add(logo);
         stage.show();
     }
 
@@ -101,8 +104,6 @@ public class ChessBoard extends Application {
                     && selectedSquare.getPiece().getPieceColor() == currentPlayer
                     && selectedSquare.getPossibleMoves().containsKey(clickedSquare.getCoordinates())) {
                 selectedSquare.getPossibleMoves().get(clickedSquare.getCoordinates()).accept(clickedSquare.getCoordinates());
-            //move(selectedSquare.getCoordinates(), clickedSquare.getCoordinates());
-
                 switchCurrentPlayer();
             } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece()) {
                 selectedSquare = null;
@@ -170,6 +171,23 @@ public class ChessBoard extends Application {
         }
 
         render();
+    }
+
+    public Set<Coordinates> getPossibleMoves(ChessColor player, Coordinates from, Coordinates to) {
+        Set<Coordinates> result = new HashSet<>();
+        for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
+            for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                System.out.println(coordinates);
+                ChessSquare chessSquare = getSquare(coordinates);
+
+                if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor() == player && !coordinates.equals(from) && !coordinates.equals(to)){}
+                    result.addAll(chessSquare.getPossibleMoves().keySet());
+                //if(coordinates.equals(to))
+                  //  result.addAll(getSquare(from).getPiece().getPossibleMoves(this, to).keySet());
+            }
+        }
+        return result;
     }
 
     public static void main(String[] args) {

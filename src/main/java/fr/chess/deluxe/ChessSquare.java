@@ -10,6 +10,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -70,30 +72,47 @@ public class ChessSquare {
             stackPane.getChildren().add(imageView);
         }
 
+        Color inverseColor = color == ChessBoard.CHESS_SQUARE_COLOR_1 ? ChessBoard.CHESS_SQUARE_COLOR_2 : ChessBoard.CHESS_SQUARE_COLOR_1;
         if(chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().getPossibleMoves().containsKey(this.getCoordinates())) {
             int circleSize = ChessBoard.CHESS_SQUARE_SIZE / 10;
             int innerCircleSize = 0;
-            Color circleColor = color == ChessBoard.CHESS_SQUARE_COLOR_1 ? ChessBoard.CHESS_SQUARE_COLOR_2 : ChessBoard.CHESS_SQUARE_COLOR_1;
-            if(piece != null && piece.getPieceColor() != chessBoard.getCurrentPlayer()) {
-                circleColor = Color.RED;
-                circleSize = ChessBoard.CHESS_SQUARE_SIZE * 49 / 100;
-                innerCircleSize = ChessBoard.CHESS_SQUARE_SIZE * 45 / 100;
+            Color circleColor = inverseColor;
+            if(piece != null) {
+                if(piece.getPieceColor() == chessBoard.getCurrentPlayer()) {
+                    circleSize = ChessBoard.CHESS_SQUARE_SIZE * 15 / 100;
+                    circleColor = Color.PURPLE;
+                } else {
+                    circleColor = Color.RED;
+                    circleSize = ChessBoard.CHESS_SQUARE_SIZE * 49 / 100;
+                    innerCircleSize = ChessBoard.CHESS_SQUARE_SIZE * 45 / 100;
+                }
+
             }
             Circle circle = new Circle(circleSize);
             Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
             Shape donut = Shape.subtract(circle, innerCircle);
             donut.setFill(circleColor);
             stackPane.getChildren().add(donut);
-        } /* else if (chessBoard.getSelectedSquare() != null && new Move(this, true, new Castled()).isIn(chessBoard.getSelectedSquare().getPossibleMoves())) {
-            Color circleColor = Color.RED;
-            int circleSize = ChessBoard.CHESS_SQUARE_SIZE * 49 / 100;
-            int innerCircleSize = ChessBoard.CHESS_SQUARE_SIZE * 45 / 100;
-            Circle circle = new Circle(circleSize);
-            Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
-            Shape donut = Shape.subtract(circle, innerCircle);
-            donut.setFill(circleColor);
-            stackPane.getChildren().add(donut);
-        }*/
+        }
+
+
+        if (coordinates.getY()==ChessBoard.CHESS_SQUARE_LENGTH-1) {
+            Text letter = new Text(String.valueOf(coordinates.toString().charAt(0)));
+            letter.setFont(Font.font("Comic Sans MS", 20));
+            letter.setTranslateX(-43);
+            letter.setTranslateY(35);
+            letter.setFill(inverseColor);
+            stackPane.getChildren().add(letter);
+        }
+
+        if (coordinates.getX()==ChessBoard.CHESS_SQUARE_LENGTH-1) {
+            Text number = new Text(String.valueOf(coordinates.toString().charAt(1)));
+            number.setFont(Font.font("Comic Sans MS", 20));
+            number.setTranslateX(40);
+            number.setTranslateY(-40);
+            number.setFill(inverseColor);
+            stackPane.getChildren().add(number);
+        }
 
         button.setGraphic(stackPane);
     }
@@ -101,10 +120,9 @@ public class ChessSquare {
 
 
     public Map<Coordinates, Consumer<Coordinates>> getPossibleMoves() {
-        Map<Coordinates, Consumer<Coordinates>> result = new HashMap<>();
-        piece.getMovements().forEach(movement -> result.putAll(movement.getPossibleSquare(this)));
-        return result;
+        return hasPiece() ? piece.getPossibleMoves(chessBoard, coordinates) : new HashMap<>();
     }
+
 
     public Button getButton() {
         return button;

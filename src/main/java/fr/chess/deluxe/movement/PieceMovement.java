@@ -24,6 +24,7 @@ public enum PieceMovement {
 
     private void check(ChessBoard board, ChessColor playerPieceColor, Coordinates coordinates, Consumer<Coordinates> targetConsumer, boolean recursive,
                        Map<Coordinates, Consumer<Coordinates>> possibleTargetTriggerEventMap, Consumer<Coordinates> triggerEvent, boolean canEatAlly) {
+        Coordinates fromCoordinates = coordinates.clone();
         targetConsumer.accept(coordinates);
         Coordinates toCoordinates = coordinates.clone();
 
@@ -36,7 +37,22 @@ public enum PieceMovement {
             boolean toHasOppositePieceColor = toHasPiece && toPiece.getPieceColor() != playerPieceColor;
 
             if(canEatAlly || (!toHasPiece || toHasOppositePieceColor)) {
-                possibleTargetTriggerEventMap.put(toCoordinates, triggerEvent);
+                Coordinates kingCoordinates = null;
+                for (int x = 0; x < ChessBoard.CHESS_SQUARE_LENGTH; x++) {
+                    for (int y = 0; y < ChessBoard.CHESS_SQUARE_LENGTH; y++) {
+                        Coordinates coordinatesSearch = new Coordinates(x, y);
+                        ChessSquare chessSquare = board.getSquare(coordinatesSearch);
+
+                        if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor().equals(board.getCurrentPlayer()) && chessSquare.getPiece() instanceof ChessPieceKing) {
+                            kingCoordinates = coordinatesSearch;
+                        }
+                    }
+                }
+
+                //System.out.println(board.getPossibleMoves(playerPieceColor.inverse(), fromCoordinates, toCoordinates));
+                //Overflow
+                //if(!recursive && !board.getPossibleMoves(playerPieceColor.inverse(), fromCoordinates, toCoordinates).contains(kingCoordinates))
+                    possibleTargetTriggerEventMap.put(toCoordinates, triggerEvent);
 
                 if(!toHasPiece && recursive)
                     check(board, playerPieceColor, coordinates, targetConsumer, true, possibleTargetTriggerEventMap, triggerEvent, canEatAlly);
@@ -82,11 +98,7 @@ public enum PieceMovement {
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, PieceMovementRules.DEFAULT);
     }
 
-    public Map<Coordinates, Consumer<Coordinates>> getPossibleSquare(ChessSquare chessSquare) {
-        ChessBoard chessBoard = chessSquare.getChessBoard();
-        ChessColor squarePieceColor = chessSquare.getPiece().getPieceColor();
-        Coordinates squareCoordinates = chessSquare.getCoordinates();
-
+    public Map<Coordinates, Consumer<Coordinates>> getPossibleSquare(ChessBoard chessBoard, ChessColor squarePieceColor, Coordinates squareCoordinates) {
         Map<Coordinates, Consumer<Coordinates>> possibleSquare = new HashMap<>();
         switch (this) {
             case ROOK -> {

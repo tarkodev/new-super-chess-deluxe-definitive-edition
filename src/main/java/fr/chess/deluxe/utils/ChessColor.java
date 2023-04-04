@@ -34,4 +34,8 @@ public enum ChessColor {
     public Color getColor() {
         return color;
     }
+
+    public ChessColor inverse() {
+        return this == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
+    }
 }
