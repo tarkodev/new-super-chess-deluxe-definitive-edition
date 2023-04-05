@@ -84,9 +84,7 @@ public enum PieceMovement {
                     board.setPiece(fromRookPiece, fromCoordinates.clone().addX(chessDirection.getOneStep()));
                     pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates);
                 }
-
                 case PROMOTION -> board.setPiece(new ChessPieceQueen(playerPieceColor), toCoordinates);
-
                 default -> board.setPiece(fromPiece, toCoordinates);
             }
             board.getPieceMovementLogs().add(pieceMovementLog);

@@ -4,33 +4,15 @@ import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
-import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 import java.util.*;
-import java.util.function.Consumer;
 
-public class ChessBoard extends Application implements Cloneable{
+public class ChessBoard implements Cloneable{
 
-    public static final int CHESS_SQUARE_SIZE = 100;
     public static final int CHESS_SQUARE_LENGTH = 8;
 
-    public static final Color CHESS_SQUARE_COLOR_1 = Color.valueOf("#EFCCA6"); //White
-    public static final Color CHESS_SQUARE_COLOR_2 = Color.valueOf("#3C1D18"); //Black
-    public static final Color CHESS_BACKGROUND_COLOR =
-            new Color(CHESS_SQUARE_COLOR_1.getRed(), CHESS_SQUARE_COLOR_1.getGreen(), CHESS_SQUARE_COLOR_1.getBlue(), 0.5)
-                    .interpolate(CHESS_SQUARE_COLOR_2, 0.5); //Mix between Black and White
-
-    public static final Color CHESS_BACKGROUND_PREVIOUS = Color.BLUE;
-    public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00"); //Green
-
-    private final ChessSquare[][] board = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
+    private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
     private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
@@ -48,24 +30,12 @@ public class ChessBoard extends Application implements Cloneable{
         return selectedSquare;
     }
 
-    @Override
-    public void start(Stage stage) {
-        GridPane chessBoardRender = initChessBoardRender();
-        chessBoardRender.setStyle("-fx-background-color: " + getColorHexa(CHESS_BACKGROUND_COLOR));
-
-        loadPieces();
-
-        Scene scene = new Scene(chessBoardRender, CHESS_SQUARE_SIZE * CHESS_SQUARE_LENGTH, CHESS_SQUARE_SIZE * CHESS_SQUARE_LENGTH);
-        stage.setResizable(false);
-        stage.setTitle("New Super Chess Deluxe Definitive Edition++");
-        stage.setScene(scene);
-        Image logo = new Image("logo.png");
-        stage.getIcons().add(logo);
-        stage.show();
+    public void setSelectedSquare(ChessSquare selectedSquare) {
+        this.selectedSquare = selectedSquare;
     }
 
     public ChessSquare getSquare(Coordinates coordinates) {
-        return coordinates.isValid() ? this.board[coordinates.getX()][coordinates.getY()] : null;
+        return coordinates.isValid() ? this.squareBoard[coordinates.getX()][coordinates.getY()] : null;
     }
 
     public ChessColor getCurrentPlayer() {
@@ -81,62 +51,30 @@ public class ChessBoard extends Application implements Cloneable{
         selectedSquare = null;
     }
 
-    public static String getColorHexa(Color color) {
-        return String.format("#%02X%02X%02X",
-                (int)(color.getRed() * 255),
-                (int)(color.getGreen() * 255),
-                (int)(color.getBlue() * 255));
+    public ChessBoard() {
+        initChessBoardRender();
+        loadPieces();
     }
 
-    private Button initButton(int x, int y) {
-        Button button = new Button("");
-        button.setPrefWidth(CHESS_SQUARE_SIZE);
-        button.setPrefHeight(CHESS_SQUARE_SIZE);
-        button.setPadding(new Insets(0));
-        actionButton(button, new Coordinates(x, y));
-        return button;
-    }
 
-    private void actionButton(Button button, Coordinates coordinates) {
-        button.setOnAction(actionEvent -> {
-            ChessSquare clickedSquare = getSquare(coordinates);
-            if (selectedSquare != null && selectedSquare.hasPiece()
-                    && selectedSquare.getPiece().getPieceColor() == currentPlayer
-                    && selectedSquare.getPossibleMoves().containsKey(clickedSquare.getCoordinates())) {
-                selectedSquare.getPossibleMoves().get(clickedSquare.getCoordinates()).accept(clickedSquare.getCoordinates());
-                switchCurrentPlayer();
-            } else if(selectedSquare == clickedSquare || !clickedSquare.hasPiece()) {
-                selectedSquare = null;
-            } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == currentPlayer)  {
-                selectedSquare = clickedSquare;
-            }
 
-            render();
-        });
-    }
 
     public void render() {
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                board[x][y].render();
+                //board[x][y].render();
             }
         }
     }
 
-    private GridPane initChessBoardRender() {
-        GridPane chessBoardRender = new GridPane();
-
+    private void initChessBoardRender() {
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                Color color = ((x + y) % 2) == 0 ? ChessBoard.CHESS_SQUARE_COLOR_1 : ChessBoard.CHESS_SQUARE_COLOR_2;
-                ChessSquare chessSquare = new ChessSquare(this, color, new Coordinates(x, y), initButton(x, y));
-                chessBoardRender.add(chessSquare.getButton(), x * CHESS_SQUARE_SIZE, y * CHESS_SQUARE_SIZE);
-                board[x][y] = chessSquare;
-                chessSquare.render();
+                Color color = ((x + y) % 2) == 0 ? ChessRender.CHESS_SQUARE_COLOR_1 : ChessRender.CHESS_SQUARE_COLOR_2;
+                ChessSquare chessSquare = new ChessSquare(this, color, new Coordinates(x, y));
+                squareBoard[x][y] = chessSquare;
             }
         }
-
-        return chessBoardRender;
     }
 
     public void loadPieces() {
@@ -169,8 +107,6 @@ public class ChessBoard extends Application implements Cloneable{
             setPiece(new ChessPiecePawn(ChessColor.BLACK), firstPawnBlack);
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
-
-        render();
     }
 
     public Set<Coordinates> getPossibleMoves(ChessColor player, Coordinates from, Coordinates to) {
@@ -182,7 +118,7 @@ public class ChessBoard extends Application implements Cloneable{
                 ChessSquare chessSquare = getSquare(coordinates);
 
                 if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor() == player && !coordinates.equals(from) && !coordinates.equals(to)){}
-                    result.addAll(chessSquare.getPossibleMoves().keySet());
+                    result.addAll(chessSquare.getPiece().getPossibleMoves(chessSquare.getChessBoard(), coordinates).keySet());
                 //if(coordinates.equals(to))
                   //  result.addAll(getSquare(from).getPiece().getPossibleMoves(this, to).keySet());
             }
@@ -190,12 +126,18 @@ public class ChessBoard extends Application implements Cloneable{
         return result;
     }
 
-    public static void main(String[] args) {
-        launch();
-    }
-
-
     public void setPiece(ChessPiece piece, Coordinates coordinates) {
         getSquare(coordinates).setPiece(piece);
+    }
+
+    @Override
+    public ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

@@ -1,11 +1,12 @@
 package fr.chess.deluxe.utils;
 
 import fr.chess.deluxe.ChessBoard;
+import fr.chess.deluxe.ChessRender;
 import javafx.scene.paint.Color;
 
 public enum ChessColor {
-    WHITE(7, -1, 'w', ChessBoard.CHESS_SQUARE_COLOR_1),
-    BLACK(0, 1, 'b', ChessBoard.CHESS_SQUARE_COLOR_2);
+    WHITE(7, -1, 'w', ChessRender.CHESS_SQUARE_COLOR_1),
+    BLACK(0, 1, 'b', ChessRender.CHESS_SQUARE_COLOR_2);
 
     private final char character;
     private final int firstPiecesLine;

@@ -68,7 +68,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>fr.tarkod.chess/fr.chess.deluxe.ChessBoard</mainClass>
+                            <mainClass>fr.tarkod.chess/fr.chess.deluxe.ChessRender</mainClass>
                         </configuration>
                     </execution>
                 </executions>
