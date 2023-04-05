@@ -62,4 +62,15 @@ public class ChessSquare implements Cloneable {
     public String toString() {
         return coordinates.toString();
     }
+
+    @Override
+    public ChessSquare clone() {
+        try {
+            ChessSquare clone = (ChessSquare) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

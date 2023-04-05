@@ -76,6 +76,7 @@ public class ChessRender {
             if (chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().hasPiece()
                     && chessBoard.getSelectedSquare().getPiece().getPieceColor() == chessBoard.getCurrentPlayer()
                     && chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(clickedSquare.getCoordinates())) {
+                //chessBoard.getPossibleMoves(chessBoard.getCurrentPlayer(), chessBoard.getSelectedSquare().getCoordinates(), coordinates);
                 chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).get(clickedSquare.getCoordinates()).accept(clickedSquare.getCoordinates());
                 chessBoard.switchCurrentPlayer();
             } else if(chessBoard.getSelectedSquare() == clickedSquare || !clickedSquare.hasPiece()) {
