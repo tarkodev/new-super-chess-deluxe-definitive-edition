@@ -1,6 +1,7 @@
 package fr.chess.deluxe;
 
 import fr.chess.deluxe.movement.PieceMovementLog;
+import fr.chess.deluxe.piece.ChessPieceKing;
 import fr.chess.deluxe.utils.Coordinates;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -17,6 +18,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class ChessRender {
 
@@ -29,6 +33,9 @@ public class ChessRender {
                     .interpolate(CHESS_SQUARE_COLOR_2, 0.5); //Mix between Black and White
 
     public static final Color CHESS_BACKGROUND_PREVIOUS = Color.BLUE;
+
+    public static final Color CHESS_BACKGROUND_CHECK = Color.ORANGE;
+    public static final Color CHESS_BACKGROUND_CHECKMATE = Color.RED;
     public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00"); //Green
 
     private final Stage stage;
@@ -75,8 +82,7 @@ public class ChessRender {
             ChessSquare clickedSquare = chessBoard.getSquare(coordinates);
             if (chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().hasPiece()
                     && chessBoard.getSelectedSquare().getPiece().getPieceColor() == chessBoard.getCurrentPlayer()
-                    && chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(clickedSquare.getCoordinates())) {
-                //chessBoard.getPossibleMoves(chessBoard.getCurrentPlayer(), chessBoard.getSelectedSquare().getCoordinates(), coordinates);
+                    && chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(coordinates)) {
                 chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).get(clickedSquare.getCoordinates()).accept(clickedSquare.getCoordinates());
                 chessBoard.switchCurrentPlayer();
             } else if(chessBoard.getSelectedSquare() == clickedSquare || !clickedSquare.hasPiece()) {
@@ -85,6 +91,7 @@ public class ChessRender {
                 chessBoard.setSelectedSquare(clickedSquare);
             }
             render();
+
         });
     }
 
@@ -131,6 +138,14 @@ public class ChessRender {
             if(coordinates.equals(pieceMovementLog.getFromCoordinates()) || coordinates.equals(pieceMovementLog.getToCoordinates()))
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_PREVIOUS, 0.5);
         }
+        if(chessSquare.hasPiece() && chessSquare.getPiece() instanceof ChessPieceKing) {
+            ChessBoard testBoard = chessBoard.clone();
+            Set<Coordinates> coordinatesCHeck = testBoard.getPossibleMoves(chessSquare.getPiece().getPieceColor().inverse());
+            if(false) {
+                renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
+            }else if(coordinatesCHeck.contains(testBoard.getKingCoordinates(chessSquare.getPiece().getPieceColor())))
+                renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
+        }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
         StackPane stackPane = new StackPane();
 
@@ -156,7 +171,6 @@ public class ChessRender {
                     circleSize = ChessRender.CHESS_SQUARE_SIZE * 49 / 100;
                     innerCircleSize = ChessRender.CHESS_SQUARE_SIZE * 45 / 100;
                 }
-
             }
             Circle circle = new Circle(circleSize);
             Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);

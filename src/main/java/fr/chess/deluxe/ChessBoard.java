@@ -1,6 +1,5 @@
 package fr.chess.deluxe;
 
-import fr.chess.deluxe.movement.PieceMovement;
 import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
@@ -8,17 +7,36 @@ import fr.chess.deluxe.utils.Coordinates;
 import javafx.scene.paint.Color;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class ChessBoard implements Cloneable{
 
     public static final int CHESS_SQUARE_LENGTH = 8;
 
-    private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
-    private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
+    private ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
+    private List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
+
+    private boolean[][] test = new boolean[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
+
+    private boolean forTestPurpose = false;
+
+    public void setForTestPurpose(boolean forTestPurpose) {
+        this.forTestPurpose = forTestPurpose;
+    }
+
+    public boolean isForTestPurpose() {
+        return forTestPurpose;
+    }
+
+    public boolean[][] getTest() {
+        return test;
+    }
+
+    public void setTest(boolean[][] test) {
+        this.test = test;
+    }
 
     public List<PieceMovementLog> getPieceMovementLogs() {
         return pieceMovementLogs;
@@ -58,22 +76,11 @@ public class ChessBoard implements Cloneable{
     }
 
     public ChessBoard() {
-        initChessBoardRender();
+        initChessBoardSquare();
         loadPieces();
     }
 
-
-
-
-    public void render() {
-        for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
-            for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                //board[x][y].render();
-            }
-        }
-    }
-
-    private void initChessBoardRender() {
+    private void initChessBoardSquare() {
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
                 Color color = ((x + y) % 2) == 0 ? ChessRender.CHESS_SQUARE_COLOR_1 : ChessRender.CHESS_SQUARE_COLOR_2;
@@ -115,55 +122,76 @@ public class ChessBoard implements Cloneable{
         }
     }
 
-    public Set<Coordinates> getPossibleMoves(ChessColor player, Coordinates from, Coordinates to) {
-        ChessBoard newBoard = this.clone();
-        //Map<Coordinates, Consumer<Coordinates>> coordinatesMapMap = newBoard.getSquare(from).getPiece().getPossibleMoves(newBoard, from);
-        if(newBoard.getSelectedSquare().hasPiece()) {
-            newBoard.getSelectedSquare().getPiece().getPossibleMoves(newBoard, newBoard.getSelectedSquare().getCoordinates()).get(to).accept(to);
-            //System.out.println(newBoard.getSquare(from).getPiece().getChar());
-            System.out.println(newBoard.getSquare(to).getPiece().getChar());
-        }
-
-
-        Coordinates kingCoordinates = null;
+    public Set<Coordinates> getPossibleMoves(ChessColor chessColor) {
         Set<Coordinates> result = new HashSet<>();
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
                 Coordinates coordinates = new Coordinates(x, y);
-                ChessSquare chessSquare = newBoard.getSquare(coordinates);
+                ChessSquare chessSquare = getSquare(coordinates);
 
-                if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor() != player)
-                    result.addAll(chessSquare.getPiece().getPossibleMoves(newBoard, coordinates).keySet());
-                else if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor().equals(newBoard.getCurrentPlayer()) && chessSquare.getPiece() instanceof ChessPieceKing) {
-                    kingCoordinates = coordinates;
-                }
+                if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor().equals(chessColor))
+                    result.addAll(chessSquare.getPiece().getPossibleMoves(this, coordinates).keySet());
             }
         }
-
-        if(result.contains(kingCoordinates))
-            System.out.println("ECHEC");
-
         return result;
+    }
+
+    public Coordinates getKingCoordinates(ChessColor chessColor) {
+        for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
+            for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
+                Coordinates coordinates = new Coordinates(x, y);
+                ChessSquare chessSquare = getSquare(coordinates);
+
+                if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor().equals(chessColor) && chessSquare.getPiece() instanceof ChessPieceKing)
+                    return coordinates;
+            }
+        }
+        return null;
+    }
+
+    public void moveEvent(Coordinates from, Coordinates to) {
+        if(getSquare(from).hasPiece()) {
+            getSquare(from).getPiece().getPossibleMoves(this, this.getSquare(from).getCoordinates()).get(to).accept(to);
+        }
+    }
+
+    public boolean canMove(Coordinates from, Coordinates to) {
+        ChessBoard newBoard = this.clone();
+        newBoard.moveEvent(from, to);
+        Set<Coordinates> possibleMove = newBoard.getPossibleMoves(newBoard.getCurrentPlayer().inverse());
+        Coordinates kingCoordinates = newBoard.getKingCoordinates(newBoard.getCurrentPlayer());
+        return possibleMove.contains(kingCoordinates);
     }
 
     public void setPiece(ChessPiece piece, Coordinates coordinates) {
         getSquare(coordinates).setPiece(piece);
     }
 
-    public void move() {
-
+    public void move(Coordinates from, Coordinates to) {
+        ChessPiece fromPiece = getSquare(from).getPiece();
+        getSquare(from).removePiece();
+        getSquare(to).setPiece(fromPiece);
     }
 
     @Override
     public ChessBoard clone() {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
+
+            // Copier squareBoard
+            clone.squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
             for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
                 for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                    clone.setSqare(new Coordinates(x, y), this.getSquare(new Coordinates(x, y)).clone());
+                    clone.squareBoard[x][y] = squareBoard[x][y].clone();
+                    clone.squareBoard[x][y].setChessBoard(clone);
                 }
             }
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
+
+            clone.forTestPurpose = true;
+
+            // Copier pieceMovementLogs
+            clone.pieceMovementLogs = new ArrayList<>(pieceMovementLogs);
+
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

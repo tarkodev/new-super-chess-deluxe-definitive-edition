@@ -8,6 +8,7 @@ import fr.chess.deluxe.utils.ChessDirection;
 import fr.chess.deluxe.utils.Coordinates;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
@@ -37,22 +38,7 @@ public enum PieceMovement {
             boolean toHasOppositePieceColor = toHasPiece && toPiece.getPieceColor() != playerPieceColor;
 
             if(canEatAlly || (!toHasPiece || toHasOppositePieceColor)) {
-                Coordinates kingCoordinates = null;
-                for (int x = 0; x < ChessBoard.CHESS_SQUARE_LENGTH; x++) {
-                    for (int y = 0; y < ChessBoard.CHESS_SQUARE_LENGTH; y++) {
-                        Coordinates coordinatesSearch = new Coordinates(x, y);
-                        ChessSquare chessSquare = board.getSquare(coordinatesSearch);
-
-                        if(chessSquare.hasPiece() && chessSquare.getPiece().getPieceColor().equals(board.getCurrentPlayer()) && chessSquare.getPiece() instanceof ChessPieceKing) {
-                            kingCoordinates = coordinatesSearch;
-                        }
-                    }
-                }
-
-                //System.out.println(board.getPossibleMoves(playerPieceColor.inverse(), fromCoordinates, toCoordinates));
-                //Overflow
-                //if(!recursive && !board.getPossibleMoves(playerPieceColor.inverse(), fromCoordinates, toCoordinates).contains(kingCoordinates))
-                    possibleTargetTriggerEventMap.put(toCoordinates, triggerEvent);
+                possibleTargetTriggerEventMap.put(toCoordinates, triggerEvent);
 
                 if(!toHasPiece && recursive)
                     check(board, playerPieceColor, coordinates, targetConsumer, true, possibleTargetTriggerEventMap, triggerEvent, canEatAlly);
@@ -67,14 +53,15 @@ public enum PieceMovement {
         ChessPiece fromPiece = fromSquare.getPiece();
         int oneForward = fromPiece.getPieceColor().getOneStep();
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
-            fromSquare.removePiece();
+
             PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates);
             switch (rules) {
                 case EN_PASSANT -> {
-                    board.setPiece(fromPiece, toCoordinates);
+                    board.move(fromCoordinates, toCoordinates);
                     board.getSquare(toCoordinates.add(0, -oneForward)).removePiece();
                 }
                 case CASTLING -> {
+                    fromSquare.removePiece();
                     ChessDirection chessDirection = fromCoordinates.getX() - toCoordinates.getX() > 0 ? ChessDirection.LEFT : ChessDirection.RIGHT;
                     ChessSquare fromRookSquare = board.getSquare(toCoordinates.clone().setX(chessDirection.getFirstLine()));
                     ChessPiece fromRookPiece = fromRookSquare.getPiece();
@@ -84,8 +71,11 @@ public enum PieceMovement {
                     board.setPiece(fromRookPiece, fromCoordinates.clone().addX(chessDirection.getOneStep()));
                     pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates);
                 }
-                case PROMOTION -> board.setPiece(new ChessPieceQueen(playerPieceColor), toCoordinates);
-                default -> board.setPiece(fromPiece, toCoordinates);
+                case PROMOTION -> {
+                    board.move(fromCoordinates, toCoordinates);
+                    board.setPiece(new ChessPieceQueen(playerPieceColor), toCoordinates);
+                }
+                default -> board.move(fromCoordinates, toCoordinates);
             }
             board.getPieceMovementLogs().add(pieceMovementLog);
         }, rules == PieceMovementRules.CASTLING);
@@ -97,7 +87,7 @@ public enum PieceMovement {
     }
 
     public Map<Coordinates, Consumer<Coordinates>> getPossibleSquare(ChessBoard chessBoard, ChessColor squarePieceColor, Coordinates squareCoordinates) {
-        Map<Coordinates, Consumer<Coordinates>> possibleSquare = new HashMap<>();
+        Map<Coordinates, Consumer<Coordinates>> possibleSquare = new ConcurrentHashMap<>();
         switch (this) {
             case ROOK -> {
                 check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(-1), true, possibleSquare);
@@ -222,6 +212,11 @@ public enum PieceMovement {
                 }
             }
         }
+
+        //remove when check
+        if(!chessBoard.isForTestPurpose()) possibleSquare.forEach((toCoordinates, coordinatesConsumer) -> {
+            if(chessBoard.canMove(squareCoordinates, toCoordinates)) possibleSquare.remove(toCoordinates);
+        });
 
         return possibleSquare;
     }

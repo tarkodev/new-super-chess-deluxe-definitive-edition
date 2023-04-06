@@ -18,11 +18,11 @@ import java.util.function.Consumer;
 
 public class ChessSquare implements Cloneable {
 
-    private final ChessBoard chessBoard;
-    private final Coordinates coordinates;
+    private ChessBoard chessBoard;
+    private Coordinates coordinates;
     private ChessPiece piece;
 
-    private final Color color;
+    private Color color;
 
     public Color getColor() {
         return color;
@@ -54,6 +54,12 @@ public class ChessSquare implements Cloneable {
         return chessBoard;
     }
 
+    public void setChessBoard(ChessBoard chessBoard) {
+        this.chessBoard = chessBoard;
+    }
+
+
+
     public Coordinates getCoordinates() {
         return coordinates.clone();
     }
@@ -67,7 +73,16 @@ public class ChessSquare implements Cloneable {
     public ChessSquare clone() {
         try {
             ChessSquare clone = (ChessSquare) super.clone();
-            // TODO: copy mutable state here, so the clone can't change the internals of the original
+
+
+            // Copier coordinates
+            clone.coordinates = coordinates.clone();
+
+            // Copier piece (nécessite que les sous-classes de ChessPiece aient des méthodes clone() correctes)
+            if (piece != null) {
+                clone.piece = piece.clone();
+            }
+
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
