@@ -2,7 +2,9 @@ package fr.chess.deluxe;
 
 import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.ChessPieceKing;
+import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.PlayerInformation;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -139,11 +141,12 @@ public class ChessRender {
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_PREVIOUS, 0.5);
         }
         if(chessSquare.hasPiece() && chessSquare.getPiece() instanceof ChessPieceKing) {
-            ChessBoard testBoard = chessBoard.clone();
-            Set<Coordinates> coordinatesCHeck = testBoard.getPossibleMoves(chessSquare.getPiece().getPieceColor().inverse());
-            if(false) {
+            Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
+            //Set<Coordinates> coordinatesCHeck = testBoard.getPossibleMoves(chessSquare.getPiece().getPieceColor().inverse());
+
+            if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECKMATE)) {
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
-            }else if(coordinatesCHeck.contains(testBoard.getKingCoordinates(chessSquare.getPiece().getPieceColor())))
+            }else if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECK))
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
         }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
@@ -158,25 +161,30 @@ public class ChessRender {
         }
 
         Color inverseColor = chessSquare.getColor() == ChessRender.CHESS_SQUARE_COLOR_1 ? ChessRender.CHESS_SQUARE_COLOR_2 : ChessRender.CHESS_SQUARE_COLOR_1;
-        if(chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().hasPiece() && chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(coordinates)) {
-            int circleSize = ChessRender.CHESS_SQUARE_SIZE / 10;
-            int innerCircleSize = 0;
-            Color circleColor = inverseColor;
-            if(chessSquare.hasPiece()) {
-                if(chessSquare.getPiece().getPieceColor() == chessBoard.getCurrentPlayer()) {
-                    circleSize = ChessRender.CHESS_SQUARE_SIZE * 15 / 100;
-                    circleColor = Color.PURPLE;
-                } else {
-                    circleColor = Color.RED;
-                    circleSize = ChessRender.CHESS_SQUARE_SIZE * 49 / 100;
-                    innerCircleSize = ChessRender.CHESS_SQUARE_SIZE * 45 / 100;
+        if(chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().hasPiece() ) {
+            Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
+            //System.out.println(chessColorPlayerInformationMap.get(ChessColor.WHITE).getPossibleMoves());
+            //System.out.println(chessColorPlayerInformationMap.get(ChessColor.BLACK).getPossibleMoves());
+            if(chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(coordinates)) {
+                int circleSize = ChessRender.CHESS_SQUARE_SIZE / 10;
+                int innerCircleSize = 0;
+                Color circleColor = inverseColor;
+                if (chessSquare.hasPiece()) {
+                    if (chessSquare.getPiece().getPieceColor() == chessBoard.getCurrentPlayer()) {
+                        circleSize = ChessRender.CHESS_SQUARE_SIZE * 15 / 100;
+                        circleColor = Color.PURPLE;
+                    } else {
+                        circleColor = Color.RED;
+                        circleSize = ChessRender.CHESS_SQUARE_SIZE * 49 / 100;
+                        innerCircleSize = ChessRender.CHESS_SQUARE_SIZE * 45 / 100;
+                    }
                 }
+                Circle circle = new Circle(circleSize);
+                Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
+                Shape donut = Shape.subtract(circle, innerCircle);
+                donut.setFill(circleColor);
+                stackPane.getChildren().add(donut);
             }
-            Circle circle = new Circle(circleSize);
-            Circle innerCircle = new Circle(innerCircleSize, Color.TRANSPARENT);
-            Shape donut = Shape.subtract(circle, innerCircle);
-            donut.setFill(circleColor);
-            stackPane.getChildren().add(donut);
         }
 
 

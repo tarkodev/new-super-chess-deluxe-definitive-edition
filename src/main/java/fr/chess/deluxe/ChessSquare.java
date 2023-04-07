@@ -58,8 +58,6 @@ public class ChessSquare implements Cloneable {
         this.chessBoard = chessBoard;
     }
 
-
-
     public Coordinates getCoordinates() {
         return coordinates.clone();
     }

@@ -1,0 +1,52 @@
+package fr.chess.deluxe.utils;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class PlayerInformation {
+    private CheckStatus checkStatus;
+    private Coordinates kingPosition;
+    private Set<Coordinates> possibleMoves;
+
+    public PlayerInformation(CheckStatus checkStatus, Coordinates kingPosition, Set<Coordinates> possibleMoves) {
+        this.checkStatus = checkStatus;
+        this.kingPosition = kingPosition;
+        this.possibleMoves = possibleMoves;
+    }
+
+    public PlayerInformation() {
+        this.checkStatus = CheckStatus.NONE;
+        this.possibleMoves = new HashSet<>();
+    }
+
+    public CheckStatus getCheckStatus() {
+        return checkStatus;
+    }
+
+    public void setCheckStatus(CheckStatus checkStatus) {
+        this.checkStatus = checkStatus;
+    }
+
+    public Coordinates getKingPosition() {
+        return kingPosition;
+    }
+
+    public void setKingPosition(Coordinates kingPosition) {
+        this.kingPosition = kingPosition;
+    }
+
+    public Set<Coordinates> getPossibleMoves() {
+        return possibleMoves;
+    }
+
+    public void setPossibleMoves(Set<Coordinates> possibleMoves) {
+        this.possibleMoves = possibleMoves;
+    }
+
+    public enum CheckStatus {
+
+        NONE,
+        CHECK,
+        CHECKMATE
+    }
+}

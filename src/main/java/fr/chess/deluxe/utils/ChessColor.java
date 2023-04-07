@@ -8,9 +8,11 @@ public enum ChessColor {
     WHITE(7, -1, 'w', ChessRender.CHESS_SQUARE_COLOR_1),
     BLACK(0, 1, 'b', ChessRender.CHESS_SQUARE_COLOR_2);
 
-    private final char character;
+
     private final int firstPiecesLine;
     private final int oneStep;
+
+    private final char character;
     private final Color color;
 
     ChessColor(int firstLine, int oneStep, char character, Color color) {

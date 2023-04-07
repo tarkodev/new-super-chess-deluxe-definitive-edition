@@ -6,6 +6,7 @@ import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.ChessDirection;
 import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.PlayerInformation;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -215,7 +216,11 @@ public enum PieceMovement {
 
         //remove when check
         if(!chessBoard.isForTestPurpose()) possibleSquare.forEach((toCoordinates, coordinatesConsumer) -> {
-            if(chessBoard.canMove(squareCoordinates, toCoordinates)) possibleSquare.remove(toCoordinates);
+            ChessBoard cloneBoard = chessBoard.clone();
+            cloneBoard.moveEvent(squareCoordinates, toCoordinates);
+            if(!cloneBoard.getPlayerInformation().get(cloneBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {
+                possibleSquare.remove(toCoordinates);
+            }
         });
 
         return possibleSquare;
