@@ -8,12 +8,6 @@ public class PlayerInformation {
     private Coordinates kingPosition;
     private Set<Coordinates> possibleMoves;
 
-    public PlayerInformation(CheckStatus checkStatus, Coordinates kingPosition, Set<Coordinates> possibleMoves) {
-        this.checkStatus = checkStatus;
-        this.kingPosition = kingPosition;
-        this.possibleMoves = possibleMoves;
-    }
-
     public PlayerInformation() {
         this.checkStatus = CheckStatus.NONE;
         this.possibleMoves = new HashSet<>();

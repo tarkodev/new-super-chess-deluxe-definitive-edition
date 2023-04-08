@@ -1,5 +1,6 @@
 package fr.chess.deluxe;
 
+import fr.chess.deluxe.movement.PieceAction;
 import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
@@ -50,10 +51,6 @@ public class ChessBoard implements Cloneable{
         return coordinates.isValid() ? this.squareBoard[coordinates.getX()][coordinates.getY()] : null;
     }
 
-    protected void setSqare(Coordinates coordinates, ChessSquare chessSquare) {
-        this.squareBoard[coordinates.getX()][coordinates.getY()] = chessSquare;
-    }
-
     public ChessColor getCurrentPlayer() {
         return currentPlayer;
     }
@@ -84,32 +81,32 @@ public class ChessBoard implements Cloneable{
 
     public void loadPieces() {
         // White
-        setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("a1"));
-        setPiece(new ChessPieceRook(ChessColor.WHITE), new Coordinates("h1"));
-        setPiece(new ChessPieceKnight(ChessColor.WHITE), new Coordinates("b1"));
-        setPiece(new ChessPieceKnight(ChessColor.WHITE), new Coordinates("g1"));
-        setPiece(new ChessPieceBishop(ChessColor.WHITE), new Coordinates("c1"));
-        setPiece(new ChessPieceBishop(ChessColor.WHITE), new Coordinates("f1"));
-        setPiece(new ChessPieceQueen(ChessColor.WHITE), new Coordinates("d1"));
-        setPiece(new ChessPieceKing(ChessColor.WHITE), new Coordinates("e1"));
+        setPiece(new Coordinates("a1"), new ChessPieceRook(ChessColor.WHITE));
+        setPiece(new Coordinates("h1"), new ChessPieceRook(ChessColor.WHITE));
+        setPiece(new Coordinates("b1"), new ChessPieceKnight(ChessColor.WHITE));
+        setPiece(new Coordinates("g1"), new ChessPieceKnight(ChessColor.WHITE));
+        setPiece(new Coordinates("c1"), new ChessPieceBishop(ChessColor.WHITE));
+        setPiece(new Coordinates("f1"), new ChessPieceBishop(ChessColor.WHITE));
+        setPiece(new Coordinates("d1"), new ChessPieceQueen(ChessColor.WHITE));
+        setPiece(new Coordinates("e1"), new ChessPieceKing(ChessColor.WHITE));
         Coordinates firstPawnWhite = new Coordinates("a2");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(new ChessPiecePawn(ChessColor.WHITE), firstPawnWhite);
+            setPiece(firstPawnWhite, new ChessPiecePawn(ChessColor.WHITE));
             firstPawnWhite.setX(firstPawnWhite.getX()+1);
         }
 
         // Black
-        setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("a8"));
-        setPiece(new ChessPieceRook(ChessColor.BLACK), new Coordinates("h8"));
-        setPiece(new ChessPieceKnight(ChessColor.BLACK), new Coordinates("b8"));
-        setPiece(new ChessPieceKnight(ChessColor.BLACK), new Coordinates("g8"));
-        setPiece(new ChessPieceBishop(ChessColor.BLACK), new Coordinates("c8"));
-        setPiece(new ChessPieceBishop(ChessColor.BLACK), new Coordinates("f8"));
-        setPiece(new ChessPieceQueen(ChessColor.BLACK), new Coordinates("d8"));
-        setPiece(new ChessPieceKing(ChessColor.BLACK), new Coordinates("e8"));
+        setPiece(new Coordinates("a8"), new ChessPieceRook(ChessColor.BLACK));
+        setPiece(new Coordinates("h8"), new ChessPieceRook(ChessColor.BLACK));
+        setPiece(new Coordinates("b8"), new ChessPieceKnight(ChessColor.BLACK));
+        setPiece(new Coordinates("g8"), new ChessPieceKnight(ChessColor.BLACK));
+        setPiece(new Coordinates("c8"), new ChessPieceBishop(ChessColor.BLACK));
+        setPiece(new Coordinates("f8"), new ChessPieceBishop(ChessColor.BLACK));
+        setPiece(new Coordinates("d8"), new ChessPieceQueen(ChessColor.BLACK));
+        setPiece(new Coordinates("e8"), new ChessPieceKing(ChessColor.BLACK));
         Coordinates firstPawnBlack = new Coordinates("a7");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(new ChessPiecePawn(ChessColor.BLACK), firstPawnBlack);
+            setPiece(firstPawnBlack, new ChessPiecePawn(ChessColor.BLACK));
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
     }
@@ -138,7 +135,7 @@ public class ChessBoard implements Cloneable{
         }
 
         playersInformationSet.forEach((chessColors, playerInformation) -> {
-            if(playersInformationSet.get(chessColors.inverse()).getPossibleMoves().contains(playerInformation.getKingPosition())) {
+            if(playersInformationSet.get(chessColors.toggle()).getPossibleMoves().contains(playerInformation.getKingPosition())) {
                 playerInformation.setCheckStatus(PlayerInformation.CheckStatus.CHECK);
                 if(playerInformation.getPossibleMoves().isEmpty()) {
                     playerInformation.setCheckStatus(PlayerInformation.CheckStatus.CHECKMATE);
@@ -155,14 +152,31 @@ public class ChessBoard implements Cloneable{
         }
     }
 
-    public void setPiece(ChessPiece piece, Coordinates coordinates) {
+    public void setPiece(Coordinates coordinates, ChessPiece piece) {
         getSquare(coordinates).setPiece(piece);
     }
 
-    public void move(Coordinates from, Coordinates to) {
-        ChessPiece fromPiece = getSquare(from).getPiece();
-        getSquare(from).removePiece();
-        getSquare(to).setPiece(fromPiece);
+    public void cancelLastPieceMovement() {
+        PieceMovementLog lastPieceMovementLog = pieceMovementLogs.get(pieceMovementLogs.size()-1);
+        lastPieceMovementLog.apply(this, true);
+        pieceMovementLogs.remove(lastPieceMovementLog);
+    }
+
+    public void setPiece(Coordinates coordinates, ChessPiece piece, PieceMovementLog pieceMovementLog) {
+        ChessSquare square = getSquare(coordinates);
+        if(square.hasPiece()) removePiece(coordinates, pieceMovementLog);
+        pieceMovementLog.getPieceActions().add(new PieceAction(coordinates, PieceAction.Type.SET, piece));
+    }
+
+    public ChessPiece removePiece(Coordinates coordinates, PieceMovementLog pieceMovementLog) {
+        ChessSquare square = getSquare(coordinates);
+        ChessPiece piece = square.getPiece();
+        pieceMovementLog.getPieceActions().add(new PieceAction(coordinates, PieceAction.Type.REMOVE, piece));
+        return piece;
+    }
+
+    public void movePiece(Coordinates from, Coordinates to, PieceMovementLog pieceMovementLog) {
+        setPiece(to, removePiece(from, pieceMovementLog), pieceMovementLog);
     }
 
     @Override

@@ -54,30 +54,29 @@ public enum PieceMovement {
         ChessPiece fromPiece = fromSquare.getPiece();
         int oneForward = fromPiece.getPieceColor().getOneStep();
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
-
             PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates);
             switch (rules) {
                 case EN_PASSANT -> {
-                    board.move(fromCoordinates, toCoordinates);
-                    board.getSquare(toCoordinates.add(0, -oneForward)).removePiece();
+                    board.movePiece(fromCoordinates, toCoordinates, pieceMovementLog);
+                    board.removePiece(toCoordinates.add(0, -oneForward), pieceMovementLog);
                 }
                 case CASTLING -> {
-                    fromSquare.removePiece();
                     ChessDirection chessDirection = fromCoordinates.getX() - toCoordinates.getX() > 0 ? ChessDirection.LEFT : ChessDirection.RIGHT;
-                    ChessSquare fromRookSquare = board.getSquare(toCoordinates.clone().setX(chessDirection.getFirstLine()));
-                    ChessPiece fromRookPiece = fromRookSquare.getPiece();
-                    fromRookSquare.removePiece();
                     Coordinates toKingCoordinates = fromCoordinates.clone().addX(chessDirection.getOneStep()*2);
-                    board.setPiece(fromPiece, toKingCoordinates);
-                    board.setPiece(fromRookPiece, fromCoordinates.clone().addX(chessDirection.getOneStep()));
                     pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates);
+
+                    board.removePiece(fromCoordinates, pieceMovementLog);
+                    board.movePiece(toCoordinates.clone().setX(chessDirection.getFirstLine()), fromCoordinates.clone().addX(chessDirection.getOneStep()), pieceMovementLog);
+                    board.setPiece(toKingCoordinates, fromPiece, pieceMovementLog);
+
                 }
                 case PROMOTION -> {
-                    board.move(fromCoordinates, toCoordinates);
-                    board.setPiece(new ChessPieceQueen(playerPieceColor), toCoordinates);
+                    board.movePiece(fromCoordinates, toCoordinates, pieceMovementLog);
+                    board.setPiece(toCoordinates, new ChessPieceQueen(playerPieceColor), pieceMovementLog);
                 }
-                default -> board.move(fromCoordinates, toCoordinates);
+                default -> board.movePiece(fromCoordinates, toCoordinates, pieceMovementLog);
             }
+            pieceMovementLog.apply(board, false);
             board.getPieceMovementLogs().add(pieceMovementLog);
         }, rules == PieceMovementRules.CASTLING);
     }
@@ -221,8 +220,10 @@ public enum PieceMovement {
             if(!cloneBoard.getPlayerInformation().get(cloneBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {
                 possibleSquare.remove(toCoordinates);
             }
+            cloneBoard.cancelLastPieceMovement();
         });
 
         return possibleSquare;
     }
+
 }

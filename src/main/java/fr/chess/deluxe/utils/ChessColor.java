@@ -1,6 +1,5 @@
 package fr.chess.deluxe.utils;
 
-import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.ChessRender;
 import javafx.scene.paint.Color;
 
@@ -38,7 +37,7 @@ public enum ChessColor {
         return color;
     }
 
-    public ChessColor inverse() {
+    public ChessColor toggle() {
         return this == ChessColor.WHITE ? ChessColor.BLACK : ChessColor.WHITE;
     }
 }
