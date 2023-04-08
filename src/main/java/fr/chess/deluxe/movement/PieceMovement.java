@@ -8,7 +8,8 @@ import fr.chess.deluxe.utils.ChessDirection;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -215,12 +216,13 @@ public enum PieceMovement {
 
         //remove when check
         if(!chessBoard.isForTestPurpose()) possibleSquare.forEach((toCoordinates, coordinatesConsumer) -> {
-            ChessBoard cloneBoard = chessBoard.clone();
-            cloneBoard.moveEvent(squareCoordinates, toCoordinates);
-            if(!cloneBoard.getPlayerInformation().get(cloneBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {
+            chessBoard.setForTestPurpose(true);
+            chessBoard.moveEvent(squareCoordinates, toCoordinates);
+            if(!chessBoard.getPlayerInformation().get(chessBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {
                 possibleSquare.remove(toCoordinates);
             }
-            cloneBoard.cancelLastPieceMovement();
+            chessBoard.cancelLastPieceMovement();
+            chessBoard.setForTestPurpose(false);
         });
 
         return possibleSquare;

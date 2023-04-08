@@ -8,15 +8,18 @@ import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChessBoard implements Cloneable{
+public class ChessBoard{
 
     public static final int CHESS_SQUARE_LENGTH = 8;
 
-    private ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
-    private List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
+    private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
+    private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
@@ -73,7 +76,7 @@ public class ChessBoard implements Cloneable{
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
                 Color color = ((x + y) % 2) == 0 ? ChessRender.CHESS_SQUARE_COLOR_1 : ChessRender.CHESS_SQUARE_COLOR_2;
-                ChessSquare chessSquare = new ChessSquare(this, color, new Coordinates(x, y));
+                ChessSquare chessSquare = new ChessSquare(color, new Coordinates(x, y));
                 squareBoard[x][y] = chessSquare;
             }
         }
@@ -179,28 +182,5 @@ public class ChessBoard implements Cloneable{
         setPiece(to, removePiece(from, pieceMovementLog), pieceMovementLog);
     }
 
-    @Override
-    public ChessBoard clone() {
-        try {
-            ChessBoard clone = (ChessBoard) super.clone();
 
-            // Copier squareBoard
-            clone.squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
-            for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
-                for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                    clone.squareBoard[x][y] = squareBoard[x][y].clone();
-                    clone.squareBoard[x][y].setChessBoard(clone);
-                }
-            }
-
-            clone.forTestPurpose = true;
-
-            // Copier pieceMovementLogs
-            clone.pieceMovementLogs = new ArrayList<>(pieceMovementLogs);
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
 }

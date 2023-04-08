@@ -21,8 +21,6 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
 
 public class ChessRender {
 
@@ -142,11 +140,9 @@ public class ChessRender {
         }
         if(chessSquare.hasPiece() && chessSquare.getPiece() instanceof ChessPieceKing) {
             Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
-            //Set<Coordinates> coordinatesCHeck = testBoard.getPossibleMoves(chessSquare.getPiece().getPieceColor().inverse());
-
             if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECKMATE)) {
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
-            }else if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECK))
+            } else if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECK))
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
         }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
@@ -162,9 +158,6 @@ public class ChessRender {
 
         Color inverseColor = chessSquare.getColor() == ChessRender.CHESS_SQUARE_COLOR_1 ? ChessRender.CHESS_SQUARE_COLOR_2 : ChessRender.CHESS_SQUARE_COLOR_1;
         if(chessBoard.getSelectedSquare() != null && chessBoard.getSelectedSquare().hasPiece() ) {
-            Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
-            //System.out.println(chessColorPlayerInformationMap.get(ChessColor.WHITE).getPossibleMoves());
-            //System.out.println(chessColorPlayerInformationMap.get(ChessColor.BLACK).getPossibleMoves());
             if(chessBoard.getSelectedSquare().getPiece().getPossibleMoves(chessBoard, chessBoard.getSelectedSquare().getCoordinates()).containsKey(coordinates)) {
                 int circleSize = ChessRender.CHESS_SQUARE_SIZE / 10;
                 int innerCircleSize = 0;

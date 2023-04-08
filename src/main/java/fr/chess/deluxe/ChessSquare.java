@@ -1,35 +1,19 @@
 package fr.chess.deluxe;
 
-import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 
-import java.util.*;
-import java.util.function.Consumer;
-
-public class ChessSquare implements Cloneable {
-
-    private ChessBoard chessBoard;
-    private Coordinates coordinates;
+public class ChessSquare {
+    private final Coordinates coordinates;
+    private final Color color;
     private ChessPiece piece;
-
-    private Color color;
 
     public Color getColor() {
         return color;
     }
 
-    public ChessSquare(ChessBoard chessBoard, Color color, Coordinates coordinates) {
-        this.chessBoard = chessBoard;
+    public ChessSquare(Color color, Coordinates coordinates) {
         this.color = color;
         this.coordinates = coordinates;
     }
@@ -50,14 +34,6 @@ public class ChessSquare implements Cloneable {
         return piece;
     }
 
-    public ChessBoard getChessBoard() {
-        return chessBoard;
-    }
-
-    public void setChessBoard(ChessBoard chessBoard) {
-        this.chessBoard = chessBoard;
-    }
-
     public Coordinates getCoordinates() {
         return coordinates.clone();
     }
@@ -65,25 +41,5 @@ public class ChessSquare implements Cloneable {
     @Override
     public String toString() {
         return coordinates.toString();
-    }
-
-    @Override
-    public ChessSquare clone() {
-        try {
-            ChessSquare clone = (ChessSquare) super.clone();
-
-
-            // Copier coordinates
-            clone.coordinates = coordinates.clone();
-
-            // Copier piece (nécessite que les sous-classes de ChessPiece aient des méthodes clone() correctes)
-            if (piece != null) {
-                clone.piece = piece.clone();
-            }
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 }

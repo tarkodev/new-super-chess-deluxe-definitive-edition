@@ -1,11 +1,11 @@
 package fr.chess.deluxe.movement;
 
 import fr.chess.deluxe.ChessBoard;
-import fr.chess.deluxe.ChessSquare;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PieceMovementLog {
@@ -23,7 +23,9 @@ public class PieceMovementLog {
     }
 
     public void apply(ChessBoard chessBoard, boolean reverse) {
+        if (reverse) Collections.reverse(pieceActions);
         pieceActions.forEach(pieceAction -> pieceAction.apply(chessBoard, reverse));
+        if (reverse) Collections.reverse(pieceActions);
     }
 
     public ChessPiece getPiece() {

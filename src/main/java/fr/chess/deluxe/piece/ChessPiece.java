@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public abstract class ChessPiece implements Cloneable {
+public abstract class ChessPiece {
 
     private final ChessColor chessColor;
 
@@ -34,16 +34,5 @@ public abstract class ChessPiece implements Cloneable {
         Map<Coordinates, Consumer<Coordinates>> result = new HashMap<>();
         getMovements().forEach(movement -> result.putAll(movement.getPossibleSquare(chessBoard, getPieceColor(), coordinates)));
         return result;
-    }
-
-    @Override
-    public ChessPiece clone() {
-        try {
-            // Copie superficielle (shallow copy) pour les champs immuables (chessColor est immuable)
-            ChessPiece clone = (ChessPiece) super.clone();
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 }
