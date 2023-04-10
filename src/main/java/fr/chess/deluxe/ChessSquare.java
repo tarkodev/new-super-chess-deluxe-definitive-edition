@@ -1,10 +1,7 @@
 package fr.chess.deluxe;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
-import fr.chess.deluxe.utils.CoordinatesTypeAdapter;
 import javafx.scene.paint.Color;
 
 public class ChessSquare {

@@ -1,8 +1,8 @@
 package fr.chess.deluxe;
 
-import fr.chess.deluxe.movement.PieceAction;
 import fr.chess.deluxe.movement.PieceMovementLog;
-import fr.chess.deluxe.piece.*;
+import fr.chess.deluxe.piece.ChessPiece;
+import fr.chess.deluxe.piece.ChessPieceType;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;

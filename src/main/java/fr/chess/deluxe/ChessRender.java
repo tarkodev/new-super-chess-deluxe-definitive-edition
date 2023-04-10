@@ -1,9 +1,10 @@
 package fr.chess.deluxe;
 
-import com.google.gson.GsonBuilder;
 import fr.chess.deluxe.movement.PieceMovementLog;
 import fr.chess.deluxe.piece.ChessPieceType;
-import fr.chess.deluxe.utils.*;
+import fr.chess.deluxe.utils.ChessColor;
+import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.PlayerInformation;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
