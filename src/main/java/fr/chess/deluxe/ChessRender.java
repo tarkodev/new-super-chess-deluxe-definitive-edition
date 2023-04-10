@@ -21,8 +21,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -61,10 +67,61 @@ public class ChessRender {
         MenuBar menuBar = new MenuBar();
 
         Menu fileMenu = new Menu("File");
+        FileChooser fileChooser = new FileChooser();
+        // Configure FileChooser to allow only the specific file extension
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("New Super Chess Deluxe Definition Edition++ (*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitioneditionplusplus)", "*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitioneditionplusplus");
+        fileChooser.getExtensionFilters().clear();
+        fileChooser.getExtensionFilters().add(extFilter);
+
         MenuItem newMenuItem = new MenuItem("New");
+
         MenuItem openMenuItem = new MenuItem("Open");
+        openMenuItem.setOnAction(event -> {
+            System.out.println("Open menu item clicked");
+            // Show open file dialog
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+                // Add your logic for the Open action here
+
+                // Load the content of the file into a string
+                try {
+                    String content = new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8);
+
+                    // Process the content as needed
+                    this.chessBoard = ChessMain.GSON.fromJson(content, ChessBoard.class);
+                } catch (IOException e) {
+                    System.err.println("Error reading from file: " + e.getMessage());
+                }
+            }
+            render();
+        });
         MenuItem saveMenuItem = new MenuItem("Save");
+        saveMenuItem.setOnAction(event -> {
+            System.out.println("Save menu item clicked");
+            // Show save file dialog
+            File selectedFile = fileChooser.showSaveDialog(stage);
+            if (selectedFile != null) {
+                System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+                // Add your logic for the Save action here
+
+                String chessBoardJson = ChessMain.GSON.toJson(chessBoard);
+
+                // Save the string to the file
+                try (FileWriter fileWriter = new FileWriter(selectedFile)) {
+                    fileWriter.write(chessBoardJson);
+                } catch (IOException e) {
+                    System.err.println("Error writing to file: " + e.getMessage());
+                }
+            }
+            render();
+        });
         MenuItem exitMenuItem = new MenuItem("Exit");
+        exitMenuItem.setOnAction(event -> {
+            System.out.println("Exit menu item clicked");
+            // Close the application
+            stage.close();
+        });
         fileMenu.getItems().addAll(newMenuItem, openMenuItem, saveMenuItem, exitMenuItem);
 
         Menu editMenu = new Menu("Edit");
