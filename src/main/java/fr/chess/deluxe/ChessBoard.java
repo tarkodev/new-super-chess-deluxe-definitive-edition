@@ -7,6 +7,7 @@ import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,12 +19,16 @@ public class ChessBoard {
     public static final int CHESS_SQUARE_LENGTH = 8;
 
     private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
-    private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
+    private transient List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
     private transient ChessSquare selectedSquare = null;
 
     private transient boolean clone = false;
+
+    public void setPieceMovementLogs(List<PieceMovementLog> pieceMovementLogs) {
+        this.pieceMovementLogs = pieceMovementLogs;
+    }
 
     public void setClone(boolean clone) {
         this.clone = clone;
@@ -162,7 +167,9 @@ public class ChessBoard {
 
     public void moveEvent(Coordinates from, Coordinates to) {
         if(getSquare(from).hasPiece()) {
-            getSquare(from).getPiece().getPossibleMoves(this, this.getSquare(from).getCoordinates()).get(to).accept(to);
+            if(getSquare(from).getPiece().getPossibleMoves(this, this.getSquare(from).getCoordinates()).containsKey(to)) {
+                getSquare(from).getPiece().getPossibleMoves(this, this.getSquare(from).getCoordinates()).get(to).accept(to);
+            }
         }
     }
 

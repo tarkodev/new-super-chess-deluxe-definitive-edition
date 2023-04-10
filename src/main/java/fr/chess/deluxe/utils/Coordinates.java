@@ -2,9 +2,10 @@ package fr.chess.deluxe.utils;
 
 import fr.chess.deluxe.ChessBoard;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Coordinates implements Cloneable {
+public class Coordinates implements Cloneable, Serializable {
 
     private int x;
     private int y;

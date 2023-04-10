@@ -214,7 +214,8 @@ public enum PieceMovement {
 
         //remove when check
         if(!chessBoard.isClone()) possibleSquare.forEach((toCoordinates, coordinatesConsumer) -> {
-            ChessBoard cloneBoard = new ChessBoard(chessBoard);
+
+            ChessBoard cloneBoard = ChessMain.GSON.fromJson(ChessMain.GSON.toJson(chessBoard), ChessBoard.class);
             cloneBoard.setClone(true);
             cloneBoard.moveEvent(squareCoordinates, toCoordinates);
             if(!cloneBoard.getPlayerInformation().get(chessBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {

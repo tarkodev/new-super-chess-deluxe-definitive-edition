@@ -70,17 +70,21 @@ public class ChessRender {
         Menu editMenu = new Menu("Edit");
         MenuItem backMenuItem = new MenuItem("Back");
         backMenuItem.setOnAction(actionEvent -> {
+            ChessBoard oldChessBoard = chessBoard;
             PieceMovementLog pieceMovementLog = chessBoard.getLastPieceMovementLog();
             if(pieceMovementLog != null) {
                 String chessBoardJson = pieceMovementLog.getChessBoardJson();
                 if(chessBoardJson != null) {
                     chessBoard = ChessMain.GSON.fromJson(chessBoardJson, ChessBoard.class);
+                    oldChessBoard.getPieceMovementLogs().remove(pieceMovementLog);
+                    chessBoard.setPieceMovementLogs(oldChessBoard.getPieceMovementLogs());
                 }
             }
             render();
         });
+        MenuItem clearLogItem = new MenuItem("Clear Log");
 
-        editMenu.getItems().addAll(backMenuItem);
+        editMenu.getItems().addAll(backMenuItem, clearLogItem);
 
         menuBar.getMenus().addAll(fileMenu, editMenu);
 

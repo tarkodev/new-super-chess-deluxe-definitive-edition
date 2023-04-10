@@ -4,10 +4,11 @@ import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
 import javafx.scene.paint.Color;
 
-public class ChessSquare {
+import java.io.Serializable;
+
+public class ChessSquare implements Serializable {
     private final Coordinates coordinates;
     private ChessPiece piece;
-
 
     public ChessSquare(Coordinates coordinates, ChessPiece piece) {
         this.coordinates = coordinates;

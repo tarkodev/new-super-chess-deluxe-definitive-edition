@@ -4,11 +4,12 @@ import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ChessPiece {
+public class ChessPiece implements Serializable {
 
     private final ChessPieceType type;
     private final ChessColor color;
