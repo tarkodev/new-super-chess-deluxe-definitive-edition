@@ -69,7 +69,7 @@ public class ChessRender {
         Menu fileMenu = new Menu("File");
         FileChooser fileChooser = new FileChooser();
         // Configure FileChooser to allow only the specific file extension
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("New Super Chess Deluxe Definition Edition++ (*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitioneditionplusplus)", "*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitioneditionplusplus");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("New Super Chess Deluxe Definition Edition++ (*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus)", "*.chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus");
         fileChooser.getExtensionFilters().clear();
         fileChooser.getExtensionFilters().add(extFilter);
 

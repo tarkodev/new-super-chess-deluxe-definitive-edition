@@ -19,9 +19,9 @@ public class ChessBoard {
     public static final int CHESS_SQUARE_LENGTH = 8;
 
     private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
-    private transient List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
+    private transient List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
     private transient ChessSquare selectedSquare = null;
 
     private transient boolean clone = false;
