@@ -1,10 +1,9 @@
 package fr.chess.deluxe;
 
+import com.google.gson.GsonBuilder;
 import fr.chess.deluxe.movement.PieceMovementLog;
-import fr.chess.deluxe.piece.ChessPieceKing;
-import fr.chess.deluxe.utils.ChessColor;
-import fr.chess.deluxe.utils.Coordinates;
-import fr.chess.deluxe.utils.PlayerInformation;
+import fr.chess.deluxe.piece.ChessPieceType;
+import fr.chess.deluxe.utils.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -59,6 +58,7 @@ public class ChessRender {
         Image logo = new Image("logo.png");
         stage.getIcons().add(logo);
 
+
         stage.show();
     }
 
@@ -91,7 +91,9 @@ public class ChessRender {
                 chessBoard.setSelectedSquare(clickedSquare);
             }
             render();
-
+            System.out.println(new GsonBuilder().registerTypeAdapter(Coordinates.class, new CoordinatesTypeAdapter())
+                    .registerTypeAdapter(ChessSquare[][].class, new ChessSquareTypeAdapter()).
+                    disableHtmlEscaping().create().toJson(chessBoard));
         });
     }
 
@@ -138,7 +140,7 @@ public class ChessRender {
             if(coordinates.equals(pieceMovementLog.getFromCoordinates()) || coordinates.equals(pieceMovementLog.getToCoordinates()))
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_PREVIOUS, 0.5);
         }
-        if(chessSquare.hasPiece() && chessSquare.getPiece() instanceof ChessPieceKing) {
+        if(chessSquare.hasPiece() && chessSquare.getPiece().getType() == ChessPieceType.KING) {
             Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
             if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECKMATE)) {
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);

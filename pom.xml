@@ -21,6 +21,12 @@
             <artifactId>batik-transcoder</artifactId>
             <version>1.16</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -69,6 +75,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>fr.tarkod.chess/fr.chess.deluxe.ChessRender</mainClass>
+                            <layout>JAR</layout>
                         </configuration>
                     </execution>
                 </executions>

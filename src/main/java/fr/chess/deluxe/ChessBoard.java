@@ -6,7 +6,6 @@ import fr.chess.deluxe.piece.*;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChessBoard{
+public class ChessBoard {
 
     public static final int CHESS_SQUARE_LENGTH = 8;
 
@@ -24,14 +23,14 @@ public class ChessBoard{
     private ChessColor currentPlayer = ChessColor.WHITE;
     private ChessSquare selectedSquare = null;
 
-    private boolean forTestPurpose = false;
+    private boolean clone = false;
 
-    public void setForTestPurpose(boolean forTestPurpose) {
-        this.forTestPurpose = forTestPurpose;
+    public void setClone(boolean clone) {
+        this.clone = clone;
     }
 
-    public boolean isForTestPurpose() {
-        return forTestPurpose;
+    public boolean isClone() {
+        return clone;
     }
 
     public List<PieceMovementLog> getPieceMovementLogs() {
@@ -72,11 +71,23 @@ public class ChessBoard{
         loadPieces();
     }
 
+    public ChessBoard(ChessBoard chessBoard) {
+        initChessBoardSquare();
+        this.clone = true;
+        this.currentPlayer = chessBoard.getCurrentPlayer();
+
+        for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
+            for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
+                squareBoard[x][y].setPiece(chessBoard.getSquare(new Coordinates(x, y)).getPiece());
+            }
+        }
+        if(chessBoard.getSelectedSquare() != null) this.selectedSquare = getSquare(chessBoard.getSelectedSquare().getCoordinates());
+    }
+
     private void initChessBoardSquare() {
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                Color color = ((x + y) % 2) == 0 ? ChessRender.CHESS_SQUARE_COLOR_1 : ChessRender.CHESS_SQUARE_COLOR_2;
-                ChessSquare chessSquare = new ChessSquare(color, new Coordinates(x, y));
+                ChessSquare chessSquare = new ChessSquare(new Coordinates(x, y));
                 squareBoard[x][y] = chessSquare;
             }
         }
@@ -84,32 +95,32 @@ public class ChessBoard{
 
     public void loadPieces() {
         // White
-        setPiece(new Coordinates("a1"), new ChessPieceRook(ChessColor.WHITE));
-        setPiece(new Coordinates("h1"), new ChessPieceRook(ChessColor.WHITE));
-        setPiece(new Coordinates("b1"), new ChessPieceKnight(ChessColor.WHITE));
-        setPiece(new Coordinates("g1"), new ChessPieceKnight(ChessColor.WHITE));
-        setPiece(new Coordinates("c1"), new ChessPieceBishop(ChessColor.WHITE));
-        setPiece(new Coordinates("f1"), new ChessPieceBishop(ChessColor.WHITE));
-        setPiece(new Coordinates("d1"), new ChessPieceQueen(ChessColor.WHITE));
-        setPiece(new Coordinates("e1"), new ChessPieceKing(ChessColor.WHITE));
+        setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+        setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+        setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
+        setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
+        setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+        setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+        setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
+        setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
         Coordinates firstPawnWhite = new Coordinates("a2");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(firstPawnWhite, new ChessPiecePawn(ChessColor.WHITE));
+            setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
             firstPawnWhite.setX(firstPawnWhite.getX()+1);
         }
 
         // Black
-        setPiece(new Coordinates("a8"), new ChessPieceRook(ChessColor.BLACK));
-        setPiece(new Coordinates("h8"), new ChessPieceRook(ChessColor.BLACK));
-        setPiece(new Coordinates("b8"), new ChessPieceKnight(ChessColor.BLACK));
-        setPiece(new Coordinates("g8"), new ChessPieceKnight(ChessColor.BLACK));
-        setPiece(new Coordinates("c8"), new ChessPieceBishop(ChessColor.BLACK));
-        setPiece(new Coordinates("f8"), new ChessPieceBishop(ChessColor.BLACK));
-        setPiece(new Coordinates("d8"), new ChessPieceQueen(ChessColor.BLACK));
-        setPiece(new Coordinates("e8"), new ChessPieceKing(ChessColor.BLACK));
+        setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+        setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+        setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
+        setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
+        setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+        setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+        setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
+        setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
         Coordinates firstPawnBlack = new Coordinates("a7");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(firstPawnBlack, new ChessPiecePawn(ChessColor.BLACK));
+            setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
     }
@@ -129,7 +140,7 @@ public class ChessBoard{
                     PlayerInformation playerInformation = playersInformationSet.get(searchColor);
                     if(searchSquare.getPiece().getPieceColor().equals(searchColor)) {
                         playerInformation.getPossibleMoves().addAll(searchSquare.getPiece().getPossibleMoves(this, searchCoordinates).keySet());
-                        if(searchSquare.getPiece() instanceof ChessPieceKing) {
+                        if(searchSquare.getPiece().getType() == ChessPieceType.KING) {
                             playerInformation.setKingPosition(searchCoordinates);
                         }
                     }
@@ -155,32 +166,26 @@ public class ChessBoard{
         }
     }
 
-    public void setPiece(Coordinates coordinates, ChessPiece piece) {
-        getSquare(coordinates).setPiece(piece);
-    }
-
     public void cancelLastPieceMovement() {
         PieceMovementLog lastPieceMovementLog = pieceMovementLogs.get(pieceMovementLogs.size()-1);
-        lastPieceMovementLog.apply(this, true);
+        System.out.println(lastPieceMovementLog);
         pieceMovementLogs.remove(lastPieceMovementLog);
     }
 
-    public void setPiece(Coordinates coordinates, ChessPiece piece, PieceMovementLog pieceMovementLog) {
+    public void setPiece(Coordinates coordinates, ChessPiece piece) {
         ChessSquare square = getSquare(coordinates);
-        if(square.hasPiece()) removePiece(coordinates, pieceMovementLog);
-        pieceMovementLog.getPieceActions().add(new PieceAction(coordinates, PieceAction.Type.SET, piece));
+        if(square.hasPiece()) removePiece(coordinates);
+        square.setPiece(piece);
     }
 
-    public ChessPiece removePiece(Coordinates coordinates, PieceMovementLog pieceMovementLog) {
+    public ChessPiece removePiece(Coordinates coordinates) {
         ChessSquare square = getSquare(coordinates);
         ChessPiece piece = square.getPiece();
-        pieceMovementLog.getPieceActions().add(new PieceAction(coordinates, PieceAction.Type.REMOVE, piece));
+        square.setPiece(null);
         return piece;
     }
 
-    public void movePiece(Coordinates from, Coordinates to, PieceMovementLog pieceMovementLog) {
-        setPiece(to, removePiece(from, pieceMovementLog), pieceMovementLog);
+    public void movePiece(Coordinates from, Coordinates to) {
+        setPiece(to, removePiece(from));
     }
-
-
 }

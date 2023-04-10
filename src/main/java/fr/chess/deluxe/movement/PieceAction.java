@@ -38,6 +38,15 @@ public class PieceAction {
         return piece;
     }
 
+    @Override
+    public String toString() {
+        return "PieceAction{" +
+                "type=" + type +
+                ", coordinates=" + coordinates +
+                ", piece=" + piece +
+                '}';
+    }
+
     public enum Type {
         SET,
         REMOVE

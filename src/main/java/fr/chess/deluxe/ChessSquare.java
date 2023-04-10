@@ -1,25 +1,29 @@
 package fr.chess.deluxe;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
+import fr.chess.deluxe.utils.CoordinatesTypeAdapter;
 import javafx.scene.paint.Color;
 
 public class ChessSquare {
     private final Coordinates coordinates;
-    private final Color color;
     private ChessPiece piece;
 
-    public Color getColor() {
-        return color;
+
+    public ChessSquare(Coordinates coordinates, ChessPiece piece) {
+        this.coordinates = coordinates;
+        this.piece = piece;
     }
 
-    public ChessSquare(Color color, Coordinates coordinates) {
-        this.color = color;
-        this.coordinates = coordinates;
+    public ChessSquare(Coordinates coordinates) {
+        this(coordinates, null);
     }
 
     public void setPiece(ChessPiece chessPiece) {
         this.piece = chessPiece;
+
     }
 
     public void removePiece() {
@@ -28,6 +32,10 @@ public class ChessSquare {
 
     public boolean hasPiece() {
         return this.piece != null;
+    }
+
+    public Color getColor() {
+        return ((coordinates.getX() + coordinates.getY()) % 2) == 0 ? ChessRender.CHESS_SQUARE_COLOR_1 : ChessRender.CHESS_SQUARE_COLOR_2;
     }
 
     public ChessPiece getPiece() {
@@ -42,4 +50,6 @@ public class ChessSquare {
     public String toString() {
         return coordinates.toString();
     }
+
+
 }
