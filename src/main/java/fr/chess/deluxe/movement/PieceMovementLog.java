@@ -8,7 +8,7 @@ public class PieceMovementLog {
     private final ChessPiece piece;
     private final Coordinates fromCoordinates;
     private final Coordinates toCoordinates;
-    private final transient String chessBoardJson;
+    private final String chessBoardJson;
 
     public PieceMovementLog(ChessPiece piece, Coordinates fromCoordinates, Coordinates toCoordinates, String chessBoardJson) {
         this.piece = piece;

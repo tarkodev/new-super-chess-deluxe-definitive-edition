@@ -21,9 +21,9 @@ public class ChessBoard {
     private final List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
 
     private ChessColor currentPlayer = ChessColor.WHITE;
-    private ChessSquare selectedSquare = null;
+    private transient ChessSquare selectedSquare = null;
 
-    private boolean clone = false;
+    private transient boolean clone = false;
 
     public void setClone(boolean clone) {
         this.clone = clone;
@@ -164,12 +164,6 @@ public class ChessBoard {
         if(getSquare(from).hasPiece()) {
             getSquare(from).getPiece().getPossibleMoves(this, this.getSquare(from).getCoordinates()).get(to).accept(to);
         }
-    }
-
-    public void cancelLastPieceMovement() {
-        PieceMovementLog lastPieceMovementLog = pieceMovementLogs.get(pieceMovementLogs.size()-1);
-        System.out.println(lastPieceMovementLog);
-        pieceMovementLogs.remove(lastPieceMovementLog);
     }
 
     public void setPiece(Coordinates coordinates, ChessPiece piece) {

@@ -7,8 +7,12 @@ import fr.chess.deluxe.utils.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -38,7 +42,7 @@ public class ChessRender {
     public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00"); //Green
 
     private final Stage stage;
-    private final ChessBoard chessBoard;
+    private ChessBoard chessBoard;
     private final Button[][] renderBoard = new Button[ChessBoard.CHESS_SQUARE_LENGTH][ChessBoard.CHESS_SQUARE_LENGTH];
 
     public ChessRender(Stage stage, ChessBoard chessBoard) {
@@ -51,13 +55,43 @@ public class ChessRender {
         GridPane chessBoardRender = loadButtons();
         chessBoardRender.setStyle("-fx-background-color: " + getColorHexa(ChessRender.CHESS_BACKGROUND_COLOR));
 
-        Scene scene = new Scene(chessBoardRender, CHESS_SQUARE_SIZE * ChessBoard.CHESS_SQUARE_LENGTH, CHESS_SQUARE_SIZE * ChessBoard.CHESS_SQUARE_LENGTH);
+        BorderPane root = new BorderPane();
+
+        MenuBar menuBar = new MenuBar();
+
+        Menu fileMenu = new Menu("File");
+        MenuItem newMenuItem = new MenuItem("New");
+        MenuItem openMenuItem = new MenuItem("Open");
+        MenuItem saveMenuItem = new MenuItem("Save");
+        MenuItem exitMenuItem = new MenuItem("Exit");
+        fileMenu.getItems().addAll(newMenuItem, openMenuItem, saveMenuItem, exitMenuItem);
+
+        Menu editMenu = new Menu("Edit");
+        MenuItem backMenuItem = new MenuItem("Back");
+        backMenuItem.setOnAction(actionEvent -> {
+            PieceMovementLog pieceMovementLog = chessBoard.getLastPieceMovementLog();
+            if(pieceMovementLog != null) {
+                String chessBoardJson = pieceMovementLog.getChessBoardJson();
+                if(chessBoardJson != null) {
+                    chessBoard = ChessMain.GSON.fromJson(chessBoardJson, ChessBoard.class);
+                }
+            }
+            render();
+        });
+
+        editMenu.getItems().addAll(backMenuItem);
+
+        menuBar.getMenus().addAll(fileMenu, editMenu);
+
+        root.setTop(menuBar);
+        root.setCenter(chessBoardRender);
+
+        Scene scene = new Scene(root);
         stage.setResizable(false);
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
         Image logo = new Image("logo.png");
         stage.getIcons().add(logo);
-
 
         stage.show();
     }
@@ -91,9 +125,6 @@ public class ChessRender {
                 chessBoard.setSelectedSquare(clickedSquare);
             }
             render();
-            System.out.println(new GsonBuilder().registerTypeAdapter(Coordinates.class, new CoordinatesTypeAdapter())
-                    .registerTypeAdapter(ChessSquare[][].class, new ChessSquareTypeAdapter()).
-                    disableHtmlEscaping().create().toJson(chessBoard));
         });
     }
 
