@@ -21,7 +21,7 @@ public class ChessBoard {
     private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
     private ChessColor currentPlayer = ChessColor.WHITE;
-    private transient List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
+    private List<PieceMovementLog> pieceMovementLogs = new ArrayList<>();
     private transient ChessSquare selectedSquare = null;
 
     private transient boolean clone = false;
@@ -175,8 +175,10 @@ public class ChessBoard {
 
     public void setPiece(Coordinates coordinates, ChessPiece piece) {
         ChessSquare square = getSquare(coordinates);
-        if(square.hasPiece()) removePiece(coordinates);
-        square.setPiece(piece);
+        if(square != null) {
+            if(square.hasPiece()) removePiece(coordinates);
+            square.setPiece(piece);
+        }
     }
 
     public ChessPiece removePiece(Coordinates coordinates) {

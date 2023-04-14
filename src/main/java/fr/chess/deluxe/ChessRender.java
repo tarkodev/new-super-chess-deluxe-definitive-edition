@@ -74,6 +74,10 @@ public class ChessRender {
         fileChooser.getExtensionFilters().add(extFilter);
 
         MenuItem newMenuItem = new MenuItem("New");
+        newMenuItem.setOnAction(event -> {
+            this.chessBoard = new ChessBoard();
+            render();
+        });
 
         MenuItem openMenuItem = new MenuItem("Open");
         openMenuItem.setOnAction(event -> {
@@ -140,6 +144,10 @@ public class ChessRender {
             render();
         });
         MenuItem clearLogItem = new MenuItem("Clear Log");
+        clearLogItem.setOnAction(actionEvent -> {
+            chessBoard.getPieceMovementLogs().clear();
+            render();
+        });
 
         editMenu.getItems().addAll(backMenuItem, clearLogItem);
 
@@ -229,7 +237,7 @@ public class ChessRender {
         if(chessSquare.equals(getChessBoard().getSelectedSquare())) {
             renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_SELECTED, 0.5);
         } else if (!pieceMovementLogs.isEmpty()) {
-            PieceMovementLog pieceMovementLog = pieceMovementLogs.get(pieceMovementLogs.size()-1);
+            PieceMovementLog pieceMovementLog = this.getChessBoard().getLastPieceMovementLog();
             if(coordinates.equals(pieceMovementLog.getFromCoordinates()) || coordinates.equals(pieceMovementLog.getToCoordinates()))
                 renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_PREVIOUS, 0.5);
         }

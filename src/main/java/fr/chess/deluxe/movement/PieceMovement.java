@@ -1,5 +1,8 @@
 package fr.chess.deluxe.movement;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.ChessMain;
 import fr.chess.deluxe.ChessSquare;
@@ -10,6 +13,7 @@ import fr.chess.deluxe.utils.ChessDirection;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 
+import java.io.StringReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -55,7 +59,11 @@ public enum PieceMovement {
         ChessPiece fromPiece = fromSquare.getPiece();
         int oneForward = fromPiece.getPieceColor().getOneStep();
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
-            PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates, ChessMain.GSON.toJson(board));
+            String chessBoardJson = ChessMain.GSON.toJson(board);
+            JsonElement jsonElement = JsonParser.parseReader(new StringReader(chessBoardJson));
+            jsonElement.getAsJsonObject().remove("pieceMovementLogs");
+            chessBoardJson = ChessMain.GSON.toJson(jsonElement);
+            PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates, chessBoardJson);
             switch (rules) {
                 case EN_PASSANT -> {
                     board.movePiece(fromCoordinates, toCoordinates);
@@ -64,7 +72,7 @@ public enum PieceMovement {
                 case CASTLING -> {
                     ChessDirection chessDirection = fromCoordinates.getX() - toCoordinates.getX() > 0 ? ChessDirection.LEFT : ChessDirection.RIGHT;
                     Coordinates toKingCoordinates = fromCoordinates.clone().addX(chessDirection.getOneStep()*2);
-                    pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates, ChessMain.GSON.toJson(board));
+                    pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates, chessBoardJson);
 
                     board.removePiece(fromCoordinates);
                     board.movePiece(toCoordinates.clone().setX(chessDirection.getFirstLine()), fromCoordinates.clone().addX(chessDirection.getOneStep()));
@@ -139,7 +147,7 @@ public enum PieceMovement {
                     if (!chessBoard.getSquare(kingLeft2).hasPiece() && !chessBoard.getSquare(kingLeft3).hasPiece() && !chessBoard.getSquare(kingLeft4).hasPiece() &&
                             chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
                                     && pieceMovementLog.getPiece().getType() == ChessPieceType.ROOK
-                                    && pieceMovementLog.getFromCoordinates().equals(kingLeft1))) {
+                                    && pieceMovementLog.getFromCoordinates().equals(kingLeft1) && chessBoard.getSquare(kingLeft1).hasPiece() &&  chessBoard.getSquare(kingLeft1).getPiece().getType().equals(ChessPieceType.ROOK) )) {
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft1), false, possibleSquare, PieceMovementRules.CASTLING);
                         check(chessBoard, squarePieceColor,  squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft2), false, possibleSquare, PieceMovementRules.CASTLING);
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(kingLeft3), false, possibleSquare, PieceMovementRules.CASTLING);
@@ -149,43 +157,37 @@ public enum PieceMovement {
                     if (!chessBoard.getSquare(kingRight3).hasPiece() && !chessBoard.getSquare(kingRight2).hasPiece() &&
                             chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
                                     && pieceMovementLog.getPiece().getType() == ChessPieceType.ROOK
-                                    && pieceMovementLog.getFromCoordinates().equals(kingRight1))) {
+                                    && pieceMovementLog.getFromCoordinates().equals(kingRight1)) && chessBoard.getSquare(kingRight1).hasPiece() &&  chessBoard.getSquare(kingRight1).getPiece().getType().equals(ChessPieceType.ROOK)) {
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(kingRight1), false, possibleSquare, PieceMovementRules.CASTLING);
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(kingRight2), false, possibleSquare, PieceMovementRules.CASTLING);
-                    }
+                    }//TODO
                 }
             }
             case PAWN -> {
-                int oneForward = squarePieceColor == ChessColor.WHITE ? -1 : 1;
-                int secondLine = squarePieceColor == ChessColor.WHITE ? ChessBoard.CHESS_SQUARE_LENGTH-2 : 1;
-                int secondToLastLine = squarePieceColor == ChessColor.WHITE ? 1 : ChessBoard.CHESS_SQUARE_LENGTH-2;
+                int oneStep = squarePieceColor.getOneStep();
+                int secondLine = squarePieceColor.getFirstPiecesLine() + oneStep;
+                int promotionLine = squarePieceColor.toggle().getFirstPiecesLine() - oneStep;
 
                 //normal advancement
-                 if (!chessBoard.getSquare(squareCoordinates.clone().addY(oneForward)).hasPiece()) {
-                     if (squareCoordinates.getY() == secondLine && !chessBoard.getSquare(squareCoordinates.clone().addY(oneForward*2)).hasPiece()) {    //1 or 2 squares
-                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), false, possibleSquare);
-                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward*2), false, possibleSquare);
-                     } else if (squareCoordinates.getY() == secondToLastLine)   //1 square with promotion
-                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), false, possibleSquare, PieceMovementRules.PROMOTION);
-                     else //1 square default
-                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneForward), false, possibleSquare);
+                ChessSquare oneStepSquare = chessBoard.getSquare(squareCoordinates.clone().addY(oneStep));
+                 if (oneStepSquare != null && !oneStepSquare.hasPiece()) {
+                     check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneStep), false, possibleSquare, squareCoordinates.getY() == promotionLine ? PieceMovementRules.PROMOTION : PieceMovementRules.DEFAULT);
+
+                     ChessSquare twoStepSquare = chessBoard.getSquare(squareCoordinates.clone().addY(oneStep*2));
+                     if (twoStepSquare != null && squareCoordinates.getY() == secondLine && !twoStepSquare.hasPiece())
+                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.addY(oneStep*2), false, possibleSquare, squareCoordinates.getY() == promotionLine ? PieceMovementRules.PROMOTION : PieceMovementRules.DEFAULT);
                  }
 
                  //normal capture left then right
-                if (squareCoordinates.getX() > 0 && chessBoard.getSquare(squareCoordinates.clone().add(-1, oneForward)).hasPiece()) {
-                    if (squareCoordinates.getY() == secondToLastLine)//1 square with promotion
-                        check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneForward), false, possibleSquare, PieceMovementRules.PROMOTION);
-                    else
-                        check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneForward), false, possibleSquare);
-                }
+                ChessSquare takeLeftSquare = chessBoard.getSquare(squareCoordinates.clone().add(-1, oneStep));
+                if (takeLeftSquare != null && takeLeftSquare.hasPiece())
+                    check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, oneStep), false, possibleSquare, squareCoordinates.getY() == promotionLine ? PieceMovementRules.PROMOTION : PieceMovementRules.DEFAULT);
 
 
-                if (squareCoordinates.getX() < ChessBoard.CHESS_SQUARE_LENGTH-2 && chessBoard.getSquare(squareCoordinates.clone().add(1, oneForward)).hasPiece()) {
-                    if (squareCoordinates.getY() == secondToLastLine)//1 square with promotion
-                        check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneForward), false, possibleSquare, PieceMovementRules.PROMOTION);
-                    else
-                        check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneForward), false, possibleSquare);
-                }
+                ChessSquare takeRightSquare = chessBoard.getSquare(squareCoordinates.clone().add(1, oneStep));
+                if (takeRightSquare != null && takeRightSquare.hasPiece())
+                    check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, oneStep), false, possibleSquare, squareCoordinates.getY() == promotionLine ? PieceMovementRules.PROMOTION : PieceMovementRules.DEFAULT);
+
 
                 //capture "en passant" left then right
                 if(chessBoard.getLastPieceMovementLog() != null) {
@@ -196,7 +198,7 @@ public enum PieceMovement {
                             && lastPieceMovementLog.getToCoordinates().equals(enPassantLeft)
                             && lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN
                             && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
-                        Coordinates enPassantMovement = squareCoordinates.clone().add(-1, oneForward);
+                        Coordinates enPassantMovement = squareCoordinates.clone().add(-1, oneStep);
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
                     }
 
@@ -205,7 +207,7 @@ public enum PieceMovement {
                             && lastPieceMovementLog.getToCoordinates().equals(enPassantRight)
                             && lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN
                             && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
-                        Coordinates enPassantRightMovement = squareCoordinates.clone().add(1, oneForward);
+                        Coordinates enPassantRightMovement = squareCoordinates.clone().add(1, oneStep);
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantRightMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
                     }
                 }

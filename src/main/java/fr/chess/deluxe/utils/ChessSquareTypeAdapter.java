@@ -3,7 +3,6 @@ package fr.chess.deluxe.utils;
 import com.google.gson.*;
 import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.ChessSquare;
-import fr.chess.deluxe.piece.ChessPiece;
 
 import java.lang.reflect.Type;
 
@@ -17,7 +16,9 @@ public class ChessSquareTypeAdapter implements JsonSerializer<ChessSquare[][]>, 
             for (int y = 0; y < ChessBoard.CHESS_SQUARE_LENGTH; y++) {
                 ChessSquare chessSquare = chessSquares[x][y];
                 if (chessSquare.getPiece() != null) {
-                    jsonObject.add(chessSquare.getCoordinates().toString(), jsonSerializationContext.serialize(chessSquare.getPiece()));
+                    JsonObject jsonSquareObject = jsonSerializationContext.serialize(chessSquare).getAsJsonObject();
+                    jsonSquareObject.remove("coordinates");
+                    jsonObject.add(chessSquare.getCoordinates().toString(), jsonSquareObject);
                 }
             }
         }
@@ -36,10 +37,10 @@ public class ChessSquareTypeAdapter implements JsonSerializer<ChessSquare[][]>, 
                 String coordinatesString = coordinates.toString();
                 if (jsonObject.has(coordinatesString)) {
                     JsonElement pieceJsonElement = jsonObject.get(coordinatesString);
-                    ChessPiece piece = jsonDeserializationContext.deserialize(pieceJsonElement, ChessPiece.class);
-                    chessSquares[x][y] = new ChessSquare(coordinates, piece);
+                    ChessSquare chessSquare = jsonDeserializationContext.deserialize(pieceJsonElement, ChessSquare.class);
+                    chessSquares[x][y] = new ChessSquare(chessSquare, coordinates);
                 } else {
-                    chessSquares[x][y] = new ChessSquare(coordinates, null);
+                    chessSquares[x][y] = new ChessSquare(coordinates);
                 }
             }
         }
