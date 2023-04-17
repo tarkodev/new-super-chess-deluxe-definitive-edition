@@ -41,6 +41,7 @@ public class PlayerInformation {
 
         NONE,
         CHECK,
-        CHECKMATE
+        CHECKMATE,
+        STALEMATE
     }
 }

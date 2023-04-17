@@ -1,5 +1,6 @@
 package fr.chess.deluxe.movement;
 
+import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
 
@@ -8,13 +9,13 @@ public class PieceMovementLog {
     private final ChessPiece piece;
     private final Coordinates fromCoordinates;
     private final Coordinates toCoordinates;
-    private final String chessBoardJson;
+    private final ChessBoard chessBoard;
 
-    public PieceMovementLog(ChessPiece piece, Coordinates fromCoordinates, Coordinates toCoordinates, String chessBoardJson) {
+    public PieceMovementLog(ChessPiece piece, Coordinates fromCoordinates, Coordinates toCoordinates, ChessBoard chessBoard) {
         this.piece = piece;
         this.fromCoordinates = fromCoordinates;
         this.toCoordinates = toCoordinates;
-        this.chessBoardJson = chessBoardJson;
+        this.chessBoard = chessBoard;
     }
 
     public ChessPiece getPiece() {
@@ -29,8 +30,8 @@ public class PieceMovementLog {
         return toCoordinates;
     }
 
-    public String getChessBoardJson() {
-        return chessBoardJson;
+    public ChessBoard getChessBoard() {
+        return chessBoard;
     }
 
     @Override

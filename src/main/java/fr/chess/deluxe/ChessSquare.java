@@ -10,6 +10,10 @@ public class ChessSquare implements Serializable {
     private final Coordinates coordinates;
     private ChessPiece piece;
 
+    public ChessSquare(ChessSquare chessSquare) {
+        this.coordinates = chessSquare.coordinates;
+        this.piece = chessSquare.piece == null ? null : new ChessPiece(chessSquare.piece);
+    }
     public ChessSquare(Coordinates coordinates) {
         this.coordinates = coordinates;
         this.piece = null;

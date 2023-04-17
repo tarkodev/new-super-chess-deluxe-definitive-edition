@@ -13,6 +13,7 @@ public class ChessMain extends Application {
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping()
             .registerTypeAdapter(Coordinates .class, new CoordinatesTypeAdapter())
             .registerTypeAdapter(ChessSquare[][].class, new ChessSquareTypeAdapter())
+            .setPrettyPrinting()
             .create();
 
     public static void main(String[] args) {

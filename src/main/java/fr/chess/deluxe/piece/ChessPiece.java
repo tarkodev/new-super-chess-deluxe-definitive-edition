@@ -19,6 +19,11 @@ public class ChessPiece implements Serializable {
         this.color = color;
     }
 
+    public ChessPiece(ChessPiece chessPiece) {
+        this.type = chessPiece.type;
+        this.color = chessPiece.color;
+    }
+
     public ChessPieceType getType() {
         return type;
     }

@@ -134,9 +134,9 @@ public class ChessRender {
             ChessBoard oldChessBoard = chessBoard;
             PieceMovementLog pieceMovementLog = chessBoard.getLastPieceMovementLog();
             if(pieceMovementLog != null) {
-                String chessBoardJson = pieceMovementLog.getChessBoardJson();
-                if(chessBoardJson != null) {
-                    chessBoard = ChessMain.GSON.fromJson(chessBoardJson, ChessBoard.class);
+                ChessBoard pieceMovementLogChessBoard = pieceMovementLog.getChessBoard();
+                if(pieceMovementLogChessBoard != null) {
+                    chessBoard = pieceMovementLogChessBoard;
                     oldChessBoard.getPieceMovementLogs().remove(pieceMovementLog);
                     chessBoard.setPieceMovementLogs(oldChessBoard.getPieceMovementLogs());
                 }

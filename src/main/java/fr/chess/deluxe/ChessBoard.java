@@ -26,6 +26,8 @@ public class ChessBoard {
 
     private transient boolean clone = false;
 
+
+
     public void setPieceMovementLogs(List<PieceMovementLog> pieceMovementLogs) {
         this.pieceMovementLogs = pieceMovementLogs;
     }
@@ -77,16 +79,18 @@ public class ChessBoard {
     }
 
     public ChessBoard(ChessBoard chessBoard) {
-        initChessBoardSquare();
         this.clone = true;
-        this.currentPlayer = chessBoard.getCurrentPlayer();
+        this.pieceMovementLogs = new ArrayList<>();
+
+        this.currentPlayer = chessBoard.currentPlayer;
+        this.selectedSquare = chessBoard.selectedSquare;
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
-                squareBoard[x][y].setPiece(chessBoard.getSquare(new Coordinates(x, y)).getPiece());
+                ChessSquare chessSquare = new ChessSquare(chessBoard.squareBoard[x][y]);
+                squareBoard[x][y] = chessSquare;
             }
         }
-        if(chessBoard.getSelectedSquare() != null) this.selectedSquare = getSquare(chessBoard.getSelectedSquare().getCoordinates());
     }
 
     private void initChessBoardSquare() {

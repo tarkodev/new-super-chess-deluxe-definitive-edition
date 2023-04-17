@@ -59,10 +59,7 @@ public enum PieceMovement {
         ChessPiece fromPiece = fromSquare.getPiece();
         int oneForward = fromPiece.getPieceColor().getOneStep();
         check(board, playerPieceColor, coordinates, target, recursive, possibleTargetEventMap, toCoordinates -> {
-            String chessBoardJson = ChessMain.GSON.toJson(board);
-            JsonElement jsonElement = JsonParser.parseReader(new StringReader(chessBoardJson));
-            jsonElement.getAsJsonObject().remove("pieceMovementLogs");
-            chessBoardJson = ChessMain.GSON.toJson(jsonElement);
+            ChessBoard chessBoardJson = new ChessBoard(board);
             PieceMovementLog pieceMovementLog = new PieceMovementLog(fromPiece, fromCoordinates, toCoordinates, chessBoardJson);
             switch (rules) {
                 case EN_PASSANT -> {
@@ -217,7 +214,7 @@ public enum PieceMovement {
         //remove when check
         if(!chessBoard.isClone()) possibleSquare.forEach((toCoordinates, coordinatesConsumer) -> {
 
-            ChessBoard cloneBoard = ChessMain.GSON.fromJson(ChessMain.GSON.toJson(chessBoard), ChessBoard.class);
+            ChessBoard cloneBoard = new ChessBoard(chessBoard);
             cloneBoard.setClone(true);
             cloneBoard.moveEvent(squareCoordinates, toCoordinates);
             if(!cloneBoard.getPlayerInformation().get(chessBoard.getCurrentPlayer()).getCheckStatus().equals(PlayerInformation.CheckStatus.NONE)) {
