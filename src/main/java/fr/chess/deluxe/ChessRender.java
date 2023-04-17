@@ -46,6 +46,8 @@ public class ChessRender {
 
     public static final Color CHESS_BACKGROUND_CHECK = Color.ORANGE;
     public static final Color CHESS_BACKGROUND_CHECKMATE = Color.RED;
+
+    public static final Color CHESS_BACKGROUND_STALEMATE = Color.BLACK;
     public static final Color CHESS_BACKGROUND_SELECTED = Color.valueOf("#00ff00"); //Green
 
     private final Stage stage;
@@ -136,9 +138,10 @@ public class ChessRender {
             if(pieceMovementLog != null) {
                 ChessBoard pieceMovementLogChessBoard = pieceMovementLog.getChessBoard();
                 if(pieceMovementLogChessBoard != null) {
-                    chessBoard = pieceMovementLogChessBoard;
                     oldChessBoard.getPieceMovementLogs().remove(pieceMovementLog);
-                    chessBoard.setPieceMovementLogs(oldChessBoard.getPieceMovementLogs());
+                    pieceMovementLogChessBoard.setPieceMovementLogs(oldChessBoard.getPieceMovementLogs());
+                    pieceMovementLogChessBoard.setClone(false);
+                    chessBoard = pieceMovementLogChessBoard;
                 }
             }
             render();
@@ -243,10 +246,11 @@ public class ChessRender {
         }
         if(chessSquare.hasPiece() && chessSquare.getPiece().getType() == ChessPieceType.KING) {
             Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
-            if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECKMATE)) {
-                renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
-            } else if(chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus().equals(PlayerInformation.CheckStatus.CHECK))
-                renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
+            switch (chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus()) {
+                case CHECK -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
+                case CHECKMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
+                case STALEMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_STALEMATE, 0.5);
+            }
         }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
         StackPane stackPane = new StackPane();
