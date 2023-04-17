@@ -42,6 +42,10 @@ public class PlayerInformation {
         NONE,
         CHECK,
         CHECKMATE,
-        STALEMATE
+        STALEMATE;
+
+        public boolean isCheck() {
+            return this.equals(CHECK) || this.equals(CHECKMATE);
+        }
     }
 }

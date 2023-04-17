@@ -1,0 +1,5 @@
+.alert > .dialog-pane {
+    -fx-font-size: 1000px; /* Taille du texte */
+    -fx-min-width: 400px; /* Largeur minimale */
+    -fx-min-height: 200px; /* Hauteur minimale */
+}

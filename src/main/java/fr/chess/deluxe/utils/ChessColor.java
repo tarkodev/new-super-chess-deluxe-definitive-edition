@@ -4,20 +4,23 @@ import fr.chess.deluxe.ChessRender;
 import javafx.scene.paint.Color;
 
 public enum ChessColor {
-    WHITE(7, -1, 'w', ChessRender.CHESS_SQUARE_COLOR_1),
-    BLACK(0, 1, 'b', ChessRender.CHESS_SQUARE_COLOR_2);
+    WHITE(7, -1, 'w', "White", ChessRender.CHESS_SQUARE_COLOR_1),
+    BLACK(0, 1, 'b', "Black", ChessRender.CHESS_SQUARE_COLOR_2);
 
 
     private final int firstPiecesLine;
     private final int oneStep;
 
     private final char character;
+
+    private final String name;
     private final Color color;
 
-    ChessColor(int firstLine, int oneStep, char character, Color color) {
+    ChessColor(int firstLine, int oneStep, char character, String name, Color color) {
         this.character = character;
         this.firstPiecesLine = firstLine;
         this.oneStep = oneStep;
+        this.name = name;
         this.color = color;
     }
 

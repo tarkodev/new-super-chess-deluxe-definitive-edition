@@ -7,10 +7,7 @@ import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -22,6 +19,7 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -58,6 +56,20 @@ public class ChessRender {
         this.stage = stage;
         this.chessBoard = chessBoard;
         loadStage();
+    }
+
+    private void showMessage(String title, String header, String content, Alert.AlertType alertType) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.initOwner(stage);
+
+        alert.getDialogPane().setPrefWidth(142);
+        alert.getDialogPane().getScene().getWindow().setOnCloseRequest(event -> alert.close());
+
+
+        alert.showAndWait();
     }
 
     private void loadStage() {
@@ -100,6 +112,7 @@ public class ChessRender {
                     System.err.println("Error reading from file: " + e.getMessage());
                 }
             }
+
             render();
         });
         MenuItem saveMenuItem = new MenuItem("Save");
@@ -197,7 +210,16 @@ public class ChessRender {
             } else if(clickedSquare.hasPiece() && clickedSquare.getPiece().getPieceColor() == chessBoard.getCurrentPlayer())  {
                 chessBoard.setSelectedSquare(clickedSquare);
             }
+
             render();
+
+            chessBoard.getPlayerInformation().forEach((chessColor, playerInformation) -> {
+                switch (playerInformation.getCheckStatus()) {
+                    case CHECKMATE:
+                    case STALEMATE:
+                    showMessage("THE END!", "-> " + playerInformation.getCheckStatus(), chessColor.toggle() + " Wins", Alert.AlertType.NONE);
+                }
+            });
         });
     }
 
@@ -225,6 +247,10 @@ public class ChessRender {
     }
 
     public void render() {
+        Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
+        if(chessColorPlayerInformationMap.get(chessBoard.getCurrentPlayer()).getCheckStatus().isCheck()) {
+
+        }
         for (int x = 0; x < ChessBoard.CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < ChessBoard.CHESS_SQUARE_LENGTH; y++) {
                 render(new Coordinates(x, y));
@@ -248,8 +274,12 @@ public class ChessRender {
             Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
             switch (chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus()) {
                 case CHECK -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
-                case CHECKMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
-                case STALEMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_STALEMATE, 0.5);
+                case CHECKMATE -> {
+                    renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
+                }
+                case STALEMATE -> {
+                    renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_STALEMATE, 0.5);
+                }
             }
         }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");

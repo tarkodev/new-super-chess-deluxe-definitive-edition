@@ -139,7 +139,6 @@ public class ChessBoard {
         Map<ChessColor, PlayerInformation> playersInformationSet = new ConcurrentHashMap<>();
         Arrays.stream(ChessColor.values()).forEach(chessColors -> playersInformationSet.put(chessColors, new PlayerInformation()));
 
-        int totalPossibleMoves = 0;
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
                 Coordinates searchCoordinates = new Coordinates(x, y);
@@ -160,9 +159,8 @@ public class ChessBoard {
 
 
         playersInformationSet.forEach((chessColors, playerInformation) -> {
-            if(playerInformation.getPossibleMoves().isEmpty()) {
+            if(playerInformation.getPossibleMoves().isEmpty())
                 playerInformation.setCheckStatus(PlayerInformation.CheckStatus.STALEMATE);
-            }
             if(playersInformationSet.get(chessColors.toggle()).getPossibleMoves().contains(playerInformation.getKingPosition())) {
                 playerInformation.setCheckStatus(PlayerInformation.CheckStatus.CHECK);
                 if(playerInformation.getPossibleMoves().isEmpty()) {

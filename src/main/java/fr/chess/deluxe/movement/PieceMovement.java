@@ -131,6 +131,7 @@ public enum PieceMovement {
                 Coordinates kingLeft3 = new Coordinates(2, squarePieceColor.getFirstPiecesLine());
                 Coordinates kingLeft4 = new Coordinates(3, squarePieceColor.getFirstPiecesLine());
 
+                Coordinates king = new Coordinates(4, squarePieceColor.getFirstPiecesLine());
 
                 Coordinates kingRight3 = new Coordinates(5, squarePieceColor.getFirstPiecesLine());
                 Coordinates kingRight2 = new Coordinates(6, squarePieceColor.getFirstPiecesLine());
@@ -138,7 +139,8 @@ public enum PieceMovement {
 
                 //If the king has not moved
                 if (chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
-                                && pieceMovementLog.getPiece().getType() == ChessPieceType.KING)) {
+                                && pieceMovementLog.getPiece().getType() == ChessPieceType.KING) && chessBoard.getSquare(king).hasPiece() && chessBoard.getSquare(king).getPiece().getType().equals(ChessPieceType.KING)
+                ) {
 
                     //If the left tower has not moved
                     if (!chessBoard.getSquare(kingLeft2).hasPiece() && !chessBoard.getSquare(kingLeft3).hasPiece() && !chessBoard.getSquare(kingLeft4).hasPiece() &&
