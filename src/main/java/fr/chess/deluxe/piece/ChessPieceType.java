@@ -11,7 +11,8 @@ public enum ChessPieceType {
     BISHOP('B', Set.of(PieceMovement.BISHOP)),
     ROOK('R', Set.of(PieceMovement.ROOK)),
     QUEEN('Q', Set.of(PieceMovement.ROOK, PieceMovement.BISHOP)),
-    KING('K', Set.of(PieceMovement.KING));
+    KING('K', Set.of(PieceMovement.KING)),
+    EMPRESS('E', Set.of(PieceMovement.KNIGHT, PieceMovement.ROOK));
 
     private final char character;
     private final Set<PieceMovement> movements;

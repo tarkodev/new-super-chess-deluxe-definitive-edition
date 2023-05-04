@@ -104,7 +104,7 @@ public class ChessBoard {
 
     public void loadPieces() {
         // White
-        setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+        setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.WHITE));
         setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
         setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
         setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
@@ -119,7 +119,7 @@ public class ChessBoard {
         }
 
         // Black
-        setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+        setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.BLACK));
         setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
         setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
         setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
