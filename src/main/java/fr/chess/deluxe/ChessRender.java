@@ -19,7 +19,6 @@ import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -29,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class ChessRender {
 
@@ -176,7 +176,7 @@ public class ChessRender {
         stage.setResizable(false);
         stage.setTitle("New Super Chess Deluxe Definitive Edition++");
         stage.setScene(scene);
-        Image logo = new Image("logo.png");
+        Image logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/logo.png")));
         stage.getIcons().add(logo);
 
         stage.show();
@@ -286,7 +286,7 @@ public class ChessRender {
         StackPane stackPane = new StackPane();
 
         if(chessSquare.hasPiece()) {
-            Image image = new Image(chessSquare.getPiece().getId() + ".png");
+            Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/pieces/" + chessSquare.getPiece().getId() + ".png")));
             ImageView imageView = new ImageView(image);
             imageView.setFitHeight(ChessRender.CHESS_SQUARE_SIZE);
             imageView.setFitWidth(ChessRender.CHESS_SQUARE_SIZE);
