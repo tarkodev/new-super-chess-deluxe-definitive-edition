@@ -14,7 +14,8 @@ public enum ChessPieceType {
     KING('K', Set.of(PieceMovement.KING)),
     PRINCESS('X', Set.of(PieceMovement.KNIGHT, PieceMovement.BISHOP)),
     EMPRESS('E', Set.of(PieceMovement.KNIGHT, PieceMovement.ROOK)),
-    NIGHTRIDER('S', Set.of(PieceMovement.NIGHTRIDER));
+    NIGHTRIDER('S', Set.of(PieceMovement.NIGHTRIDER)),
+    MASTODON('M', Set.of(PieceMovement.MASTODON));
 
     private final char character;
     private final Set<PieceMovement> movements;

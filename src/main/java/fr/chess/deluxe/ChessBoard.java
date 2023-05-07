@@ -114,7 +114,10 @@ public class ChessBoard {
         setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
         Coordinates firstPawnWhite = new Coordinates("a2");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
+            if ((i % 2) == 0 )
+                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
+            else
+                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.WHITE));
             firstPawnWhite.setX(firstPawnWhite.getX()+1);
         }
 
@@ -129,7 +132,10 @@ public class ChessBoard {
         setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
         Coordinates firstPawnBlack = new Coordinates("a7");
         for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
+            if ((i%2) == 0)
+                setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
+            else
+                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
     }
