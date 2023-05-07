@@ -142,6 +142,7 @@ public enum PieceMovement {
                                 && pieceMovementLog.getPiece().getType() == ChessPieceType.KING) && chessBoard.getSquare(king).hasPiece() && chessBoard.getSquare(king).getPiece().getType().equals(ChessPieceType.KING)
                 ) {
 
+
                     //If the left tower has not moved
                     if (!chessBoard.getSquare(kingLeft2).hasPiece() && !chessBoard.getSquare(kingLeft3).hasPiece() && !chessBoard.getSquare(kingLeft4).hasPiece() &&
                             chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
