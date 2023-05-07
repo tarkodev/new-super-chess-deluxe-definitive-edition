@@ -135,7 +135,7 @@ public class ChessBoard {
             if ((i%2) == 0)
                 setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
             else
-                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
+                setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
             firstPawnBlack.setX(firstPawnBlack.getX()+1);
         }
     }
