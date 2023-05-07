@@ -1,6 +1,7 @@
 package fr.chess.deluxe;
 
 import fr.chess.deluxe.movement.PieceMovementLog;
+import fr.chess.deluxe.movement.PieceMovementRules;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.piece.ChessPieceType;
 import fr.chess.deluxe.utils.ChessColor;
@@ -8,16 +9,16 @@ import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class ChessBoard {
 
     public static final int CHESS_SQUARE_LENGTH = 8;
 
+
+    private final Set<PieceMovementRules> rules;
     private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
     private ChessColor currentPlayer = ChessColor.WHITE;
@@ -73,15 +74,21 @@ public class ChessBoard {
         selectedSquare = null;
     }
 
-    public ChessBoard() {
+    public ChessBoard(Set<PieceMovementRules> rules) {
+        this.rules = rules;
         initChessBoardSquare();
         loadPieces();
+    }
+
+    public ChessBoard() {
+        this(Arrays.stream(PieceMovementRules.values()).collect(Collectors.toSet()));
     }
 
     public ChessBoard(ChessBoard chessBoard) {
         this.clone = true;
         this.pieceMovementLogs = new ArrayList<>();
 
+        this.rules = chessBoard.getRules();
         this.currentPlayer = chessBoard.currentPlayer;
         this.selectedSquare = chessBoard.selectedSquare;
 
@@ -200,6 +207,10 @@ public class ChessBoard {
         ChessPiece piece = square.getPiece();
         square.setPiece(null);
         return piece;
+    }
+
+    public Set<PieceMovementRules> getRules() {
+        return rules;
     }
 
     public void movePiece(Coordinates from, Coordinates to) {
