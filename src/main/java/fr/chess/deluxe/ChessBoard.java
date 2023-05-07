@@ -107,8 +107,8 @@ public class ChessBoard {
         setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.WHITE));
         setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
         setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-        setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-        setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+        setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.WHITE));
+        setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.WHITE));
         setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
         setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
         setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
@@ -122,8 +122,8 @@ public class ChessBoard {
         setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.BLACK));
         setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
         setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-        setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-        setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+        setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.BLACK));
+        setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.BLACK));
         setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
         setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
         setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));

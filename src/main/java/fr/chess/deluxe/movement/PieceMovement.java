@@ -25,9 +25,9 @@ public enum PieceMovement {
     ROOK,
     BISHOP,
     KNIGHT,
-
     PAWN,
     KING,
+    NIGHTRIDER
     ;
 
     private void check(ChessBoard board, ChessColor playerPieceColor, Coordinates coordinates, Consumer<Coordinates> targetConsumer, boolean recursive,
@@ -210,6 +210,16 @@ public enum PieceMovement {
                         check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantRightMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
                     }
                 }
+            }
+            case NIGHTRIDER -> {
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, -2), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, -1), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(2, 1), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(1, 2), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, 2), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, 1), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-2, -1), true, possibleSquare);
+                check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.add(-1, -2), true, possibleSquare);
             }
         }
 
