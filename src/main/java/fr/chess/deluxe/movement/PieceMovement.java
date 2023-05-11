@@ -22,6 +22,9 @@ import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
 
+/**
+ * Contient les mouvements possibles pour chaque type de pièces qui n'est pas une combinaison des mouvements d'autres pièces
+ */
 public enum PieceMovement {
 
     ROOK,
@@ -78,7 +81,7 @@ public enum PieceMovement {
                             pieceMovementLog = new PieceMovementLog(pieceMovementLog.getPiece(), pieceMovementLog.getFromCoordinates(), toKingCoordinates, chessBoardJson);
 
                             board.removePiece(fromCoordinates);
-                            board.movePiece(toCoordinates.clone().setX(chessDirection.getFirstLine()), fromCoordinates.clone().addX(chessDirection.getOneStep()));
+                            board.movePiece(toCoordinates.clone().setX(chessDirection.getBorderLine()), fromCoordinates.clone().addX(chessDirection.getOneStep()));
                             board.setPiece(toKingCoordinates, fromPiece);
                         }
                         case PROMOTION -> {

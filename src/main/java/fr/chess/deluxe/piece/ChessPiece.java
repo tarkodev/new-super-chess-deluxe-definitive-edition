@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * Contient les informations sur une pièce d'échec:
+ *  -son type (mouvements possibles)
+ *  -couleur de la pièce (blanc ou noir)
+ */
 public class ChessPiece implements Serializable {
 
     private final ChessPieceType type;

@@ -13,6 +13,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * Cette classe gère le modèle, elle contient les informations comme les règles, les cases du plateau (qui elle mêmes
+ *  peuvent contenir des pièces), le joueur à qui c'est le tour, ou encore la liste des mouvements faits.
+ */
 public class ChessBoard {
 
     public static final int CHESS_SQUARE_LENGTH = 8;

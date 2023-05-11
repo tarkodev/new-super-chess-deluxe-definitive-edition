@@ -1,16 +1,22 @@
 package fr.chess.deluxe.utils;
 
+import fr.chess.deluxe.ChessBoard;
+
+/**
+ * Utilisé pour le roque pour stocker les informations: le bord gauche et droit, ainsi que la direction que le roi
+ *  et la tour doivent bouger pour faire le roque.
+ */
 public enum ChessDirection {
 
     LEFT(0, -1),
-    RIGHT(7, 1);
+    RIGHT(ChessBoard.CHESS_SQUARE_LENGTH-1, 1);
 
-    private final int firstLine;
+    private final int borderLine;
     private final int oneStep;
 
 
-    ChessDirection(int firstLine, int oneStep) {
-        this.firstLine = firstLine;
+    ChessDirection(int borderLine, int oneStep) {
+        this.borderLine = borderLine;
         this.oneStep = oneStep;
     }
 
@@ -18,7 +24,7 @@ public enum ChessDirection {
         return oneStep;
     }
 
-    public int getFirstLine() {
-        return firstLine;
+    public int getBorderLine() {
+        return borderLine;
     }
 }

@@ -4,6 +4,9 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
+/**
+ * écrit ou lit des coordonnées en JSON
+ */
 public class CoordinatesTypeAdapter implements JsonSerializer<Coordinates>, JsonDeserializer<Coordinates> {
 
     @Override

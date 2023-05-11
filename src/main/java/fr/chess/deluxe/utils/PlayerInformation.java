@@ -3,6 +3,10 @@ package fr.chess.deluxe.utils;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Stockes pour chaque joueur, son statut (normal, en échec...), la position de son roit, ainsi que l'ensemble
+ *  des coordonnées des cases où ses pièces peuvent se déplacer
+ */
 public class PlayerInformation {
     private CheckStatus checkStatus;
     private Coordinates kingPosition;

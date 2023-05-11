@@ -6,6 +6,10 @@ import javafx.scene.paint.Color;
 
 import java.io.Serializable;
 
+/**
+ * Représente les différentes cases du plateau, contient la pièce qu'il y a sur la case (null si il n'y en a pas)
+ *  et les coordonnées de la case.
+ */
 public class ChessSquare implements Serializable {
     private final Coordinates coordinates;
     private ChessPiece piece;

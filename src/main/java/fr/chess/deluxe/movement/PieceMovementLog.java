@@ -4,6 +4,13 @@ import fr.chess.deluxe.ChessBoard;
 import fr.chess.deluxe.piece.ChessPiece;
 import fr.chess.deluxe.utils.Coordinates;
 
+/**
+ * Contient les informations sur un déplacement passé:
+ *  -la pièce bougée
+ *  -depuis ou elle a été bougée
+ *  -où elle a étée bougée
+ *  -L'état de l'échequier dans son ensemble à ce stade
+ */
 public class PieceMovementLog {
 
     private final ChessPiece piece;

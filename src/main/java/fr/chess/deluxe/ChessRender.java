@@ -30,6 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Cette classe gère le rendu, elle les informations comme la taille d'une case d'échec en pixels, les couleurs des
+ *  différentes casses selon leur état (case sélectionnée, en échec, qui une pièce dessus qui vient de bouger...).
+ * Contient également un tableau 2-dimensionnel de boutons, chaque bouton correspondant à une case, ce qui rend la
+ *  détection de sur quelle clase l'utilisateur a cliqué plus simple.
+ */
 public class ChessRender {
 
     public static final int CHESS_SQUARE_SIZE = 100;

@@ -8,6 +8,15 @@ import fr.chess.deluxe.utils.CoordinatesTypeAdapter;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+/**
+ * Classe principale, génère:
+ *  -le GSON qui contiendra les différents coups déjà fait dans la partie,
+ *    ainsi que les différents états du plateau au fil de la partie
+ *  -chessBoard stockes les différentes cases du plateau, ainsi que des informations comme les règles,
+ *    le joueur dont c'est le tour...
+ *  -chessRender contient les informations sur comment afficher le plateau,
+ *    comme les couleurs des différents états possibles de
+ */
 public class ChessMain extends Application {
 
     public static final Gson GSON = new GsonBuilder().disableHtmlEscaping()

@@ -6,6 +6,9 @@ import fr.chess.deluxe.ChessSquare;
 
 import java.lang.reflect.Type;
 
+/**
+ * S'occupe de la lecture et de l'écriture d'un échiquier depuis ou vers le JSON
+ */
 public class ChessSquareTypeAdapter implements JsonSerializer<ChessSquare[][]>, JsonDeserializer<ChessSquare[][]> {
 
     @Override

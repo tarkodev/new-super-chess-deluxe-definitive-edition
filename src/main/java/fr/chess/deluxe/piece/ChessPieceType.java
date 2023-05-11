@@ -4,6 +4,11 @@ import fr.chess.deluxe.movement.PieceMovement;
 
 import java.util.Set;
 
+/**
+ * Contient les informations pour chaque pièce de l'échiquier:
+ *  -le charactère utilisé dans la notation pour caractériser cette couleur d'équipe
+ *  -Les mouvements réalisables par ce type de pièce (ligne droite pour les tours, diagonales pour les fous...)
+ */
 public enum ChessPieceType {
 
     PAWN('P', Set.of(PieceMovement.PAWN)),

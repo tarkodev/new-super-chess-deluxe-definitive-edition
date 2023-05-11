@@ -5,6 +5,10 @@ import fr.chess.deluxe.ChessBoard;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Les coordonnées de chaque pièce, x pour son abscisse, y pour son ordonnée.
+ * à noter que y = 0 en haut du plateau
+ */
 public class Coordinates implements Cloneable, Serializable {
 
     private int x;
