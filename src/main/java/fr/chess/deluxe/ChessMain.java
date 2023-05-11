@@ -15,7 +15,7 @@ import javafx.stage.Stage;
  *  -chessBoard stockes les différentes cases du plateau, ainsi que des informations comme les règles,
  *    le joueur dont c'est le tour...
  *  -chessRender contient les informations sur comment afficher le plateau,
- *    comme les couleurs des différents états possibles de
+ *    comme les couleurs des différents états possibles des cases
  */
 public class ChessMain extends Application {
 
