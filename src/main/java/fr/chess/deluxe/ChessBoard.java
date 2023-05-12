@@ -106,6 +106,7 @@ public class ChessBoard {
         this.rules = chessBoard.getRules();
         this.currentPlayer = chessBoard.currentPlayer;
         this.selectedSquare = chessBoard.selectedSquare;
+        this.gameMode = chessBoard.getGameMode();
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
