@@ -95,7 +95,7 @@ public class ChessRender {
 
         MenuItem newMenuItem = new MenuItem("New");
         newMenuItem.setOnAction(event -> {
-            this.chessBoard = new ChessBoard(chessBoard.getGameMode());
+            this.chessBoard = new ChessBoard(this.chessBoard.getGameMode());
             render();
         });
 
@@ -106,8 +106,6 @@ public class ChessRender {
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
                 System.out.println("Selected file: " + selectedFile.getAbsolutePath());
-                // Add your logic for the Open action here
-
                 // Load the content of the file into a string
                 try {
                     String content = new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8);

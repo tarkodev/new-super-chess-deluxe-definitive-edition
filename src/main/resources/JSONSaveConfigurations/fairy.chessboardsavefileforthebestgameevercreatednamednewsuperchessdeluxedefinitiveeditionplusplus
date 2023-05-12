@@ -1,0 +1,205 @@
+{
+  "rules": [
+    "PROMOTION",
+    "EN_PASSANT",
+    "CASTLING",
+    "DEFAULT"
+  ],
+  "squareBoard": {
+    "a8": {
+      "piece": {
+        "type": "EMPRESS",
+        "color": "BLACK"
+      }
+    },
+    "a7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "a2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "a1": {
+      "piece": {
+        "type": "EMPRESS",
+        "color": "WHITE"
+      }
+    },
+    "b8": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "BLACK"
+      }
+    },
+    "b7": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "BLACK"
+      }
+    },
+    "b2": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "WHITE"
+      }
+    },
+    "b1": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "WHITE"
+      }
+    },
+    "c8": {
+      "piece": {
+        "type": "PRINCESS",
+        "color": "BLACK"
+      }
+    },
+    "c7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "c2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "c1": {
+      "piece": {
+        "type": "PRINCESS",
+        "color": "WHITE"
+      }
+    },
+    "d8": {
+      "piece": {
+        "type": "QUEEN",
+        "color": "BLACK"
+      }
+    },
+    "d7": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "BLACK"
+      }
+    },
+    "d2": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "WHITE"
+      }
+    },
+    "d1": {
+      "piece": {
+        "type": "QUEEN",
+        "color": "WHITE"
+      }
+    },
+    "e8": {
+      "piece": {
+        "type": "KING",
+        "color": "BLACK"
+      }
+    },
+    "e7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "e2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "e1": {
+      "piece": {
+        "type": "KING",
+        "color": "WHITE"
+      }
+    },
+    "f8": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "BLACK"
+      }
+    },
+    "f7": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "BLACK"
+      }
+    },
+    "f2": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "WHITE"
+      }
+    },
+    "f1": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "WHITE"
+      }
+    },
+    "g8": {
+      "piece": {
+        "type": "NIGHTRIDER",
+        "color": "BLACK"
+      }
+    },
+    "g7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "g2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "g1": {
+      "piece": {
+        "type": "NIGHTRIDER",
+        "color": "WHITE"
+      }
+    },
+    "h8": {
+      "piece": {
+        "type": "ROOK",
+        "color": "BLACK"
+      }
+    },
+    "h7": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "BLACK"
+      }
+    },
+    "h2": {
+      "piece": {
+        "type": "MASTODON",
+        "color": "WHITE"
+      }
+    },
+    "h1": {
+      "piece": {
+        "type": "ROOK",
+        "color": "WHITE"
+      }
+    }
+  },
+  "currentPlayer": "WHITE",
+  "pieceMovementLogs": [],
+  "gameMode": "fairy"
+}

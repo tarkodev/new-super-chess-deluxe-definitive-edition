@@ -1,0 +1,205 @@
+{
+  "rules": [
+    "DEFAULT",
+    "EN_PASSANT",
+    "CASTLING",
+    "PROMOTION"
+  ],
+  "squareBoard": {
+    "a8": {
+      "piece": {
+        "type": "ROOK",
+        "color": "BLACK"
+      }
+    },
+    "a7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "a2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "a1": {
+      "piece": {
+        "type": "ROOK",
+        "color": "WHITE"
+      }
+    },
+    "b8": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "BLACK"
+      }
+    },
+    "b7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "b2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "b1": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "WHITE"
+      }
+    },
+    "c8": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "BLACK"
+      }
+    },
+    "c7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "c2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "c1": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "WHITE"
+      }
+    },
+    "d8": {
+      "piece": {
+        "type": "QUEEN",
+        "color": "BLACK"
+      }
+    },
+    "d7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "d2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "d1": {
+      "piece": {
+        "type": "QUEEN",
+        "color": "WHITE"
+      }
+    },
+    "e8": {
+      "piece": {
+        "type": "KING",
+        "color": "BLACK"
+      }
+    },
+    "e7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "e2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "e1": {
+      "piece": {
+        "type": "KING",
+        "color": "WHITE"
+      }
+    },
+    "f8": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "BLACK"
+      }
+    },
+    "f7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "f2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "f1": {
+      "piece": {
+        "type": "BISHOP",
+        "color": "WHITE"
+      }
+    },
+    "g8": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "BLACK"
+      }
+    },
+    "g7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "g2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "g1": {
+      "piece": {
+        "type": "KNIGHT",
+        "color": "WHITE"
+      }
+    },
+    "h8": {
+      "piece": {
+        "type": "ROOK",
+        "color": "BLACK"
+      }
+    },
+    "h7": {
+      "piece": {
+        "type": "PAWN",
+        "color": "BLACK"
+      }
+    },
+    "h2": {
+      "piece": {
+        "type": "PAWN",
+        "color": "WHITE"
+      }
+    },
+    "h1": {
+      "piece": {
+        "type": "ROOK",
+        "color": "WHITE"
+      }
+    }
+  },
+  "currentPlayer": "WHITE",
+  "pieceMovementLogs": [],
+  "gameMode": "normal"
+}

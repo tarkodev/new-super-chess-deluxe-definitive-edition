@@ -7,8 +7,13 @@ import fr.chess.deluxe.piece.ChessPieceType;
 import fr.chess.deluxe.utils.ChessColor;
 import fr.chess.deluxe.utils.Coordinates;
 import fr.chess.deluxe.utils.PlayerInformation;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -22,7 +27,7 @@ public class ChessBoard {
     public static final int CHESS_SQUARE_LENGTH = 8;
 
 
-    private final Set<PieceMovementRules> rules;
+    private Set<PieceMovementRules> rules;
     private final ChessSquare[][] squareBoard = new ChessSquare[CHESS_SQUARE_LENGTH][CHESS_SQUARE_LENGTH];
 
     private ChessColor currentPlayer = ChessColor.WHITE;
@@ -85,6 +90,7 @@ public class ChessBoard {
 
     public ChessBoard(Set<PieceMovementRules> rules, String gameMode) {
         this.rules = rules;
+        this.gameMode = gameMode;
         initChessBoardSquare();
         loadPieces(gameMode);
     }
@@ -100,13 +106,22 @@ public class ChessBoard {
         this.rules = chessBoard.getRules();
         this.currentPlayer = chessBoard.currentPlayer;
         this.selectedSquare = chessBoard.selectedSquare;
-        this.gameMode = chessBoard.getGameMode();
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
                 ChessSquare chessSquare = new ChessSquare(chessBoard.squareBoard[x][y]);
                 squareBoard[x][y] = chessSquare;
             }
+        }
+    }
+
+    public void copyFrom(ChessBoard chessBoard) {
+        this.rules = chessBoard.getRules();
+        this.currentPlayer = chessBoard.getCurrentPlayer();
+        this.gameMode = chessBoard.getGameMode();
+        this.selectedSquare = null;
+        for (int i=0; i<CHESS_SQUARE_LENGTH; i++) {
+            System.arraycopy(chessBoard.squareBoard[i], 0, this.squareBoard[i], 0, CHESS_SQUARE_LENGTH);
         }
     }
 
@@ -120,74 +135,19 @@ public class ChessBoard {
     }
 
     public void loadPieces(String gameMode) {
-        if (gameMode.equals("normal")) {
-            // White
-            setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
-            setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
-            setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-            setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-            setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
-            setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
-            setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
-            setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
-            Coordinates firstPawnWhite = new Coordinates("a2");
-            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
-                firstPawnWhite.setX(firstPawnWhite.getX()+1);
-            }
+        String path = new String("src/main/resources/JSONSaveConfigurations/" + gameMode + ".chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus");
+        File selectedFile;
+        selectedFile = new File(path);
 
-            // Black
-            setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
-            setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
-            setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-            setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-            setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
-            setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
-            setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
-            setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
-            Coordinates firstPawnBlack = new Coordinates("a7");
-            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-                setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
-                firstPawnBlack.setX(firstPawnBlack.getX()+1);
-            }
-        }
-        //fairy game mode
-        else {
-            // White
-            setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.WHITE));
-            setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
-            setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-            setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.WHITE));
-            setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.WHITE));
-            setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
-            setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
-            setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
-            Coordinates firstPawnWhite = new Coordinates("a2");
-            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-                if ((i % 2) == 0 )
-                    setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
-                else
-                    setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.WHITE));
-                firstPawnWhite.setX(firstPawnWhite.getX()+1);
-            }
+        System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+        try {
+            String content = new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8);
 
-            // Black
-            setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.BLACK));
-            setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
-            setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-            setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.BLACK));
-            setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.BLACK));
-            setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
-            setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
-            setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
-            Coordinates firstPawnBlack = new Coordinates("a7");
-            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-                if ((i%2) == 0)
-                    setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
-                else
-                    setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
-                firstPawnBlack.setX(firstPawnBlack.getX()+1);
-            }
+            // Process the content as needed
+            ChessBoard chessBoard = ChessMain.GSON.fromJson(content, ChessBoard.class);
+            this.copyFrom(chessBoard);
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
         }
     }
 
