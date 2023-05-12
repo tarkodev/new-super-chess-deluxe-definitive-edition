@@ -95,7 +95,7 @@ public class ChessRender {
 
         MenuItem newMenuItem = new MenuItem("New");
         newMenuItem.setOnAction(event -> {
-            this.chessBoard = new ChessBoard();
+            this.chessBoard = new ChessBoard(chessBoard.getGameMode());
             render();
         });
 

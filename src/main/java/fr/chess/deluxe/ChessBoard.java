@@ -30,6 +30,7 @@ public class ChessBoard {
     private transient ChessSquare selectedSquare = null;
 
     private transient boolean clone = false;
+    private String gameMode;
 
 
 
@@ -69,6 +70,10 @@ public class ChessBoard {
         return currentPlayer;
     }
 
+    public String getGameMode() {
+        return gameMode;
+    }
+
     public void setCurrentPlayer(ChessColor currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
@@ -78,14 +83,14 @@ public class ChessBoard {
         selectedSquare = null;
     }
 
-    public ChessBoard(Set<PieceMovementRules> rules) {
+    public ChessBoard(Set<PieceMovementRules> rules, String gameMode) {
         this.rules = rules;
         initChessBoardSquare();
-        loadPieces();
+        loadPieces(gameMode);
     }
 
-    public ChessBoard() {
-        this(Arrays.stream(PieceMovementRules.values()).collect(Collectors.toSet()));
+    public ChessBoard(String gameMode) {
+        this(Arrays.stream(PieceMovementRules.values()).collect(Collectors.toSet()), gameMode);
     }
 
     public ChessBoard(ChessBoard chessBoard) {
@@ -95,6 +100,7 @@ public class ChessBoard {
         this.rules = chessBoard.getRules();
         this.currentPlayer = chessBoard.currentPlayer;
         this.selectedSquare = chessBoard.selectedSquare;
+        this.gameMode = chessBoard.getGameMode();
 
         for (int x = 0; x < CHESS_SQUARE_LENGTH; x++) {
             for (int y = 0; y < CHESS_SQUARE_LENGTH; y++) {
@@ -113,41 +119,75 @@ public class ChessBoard {
         }
     }
 
-    public void loadPieces() {
-        // White
-        setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.WHITE));
-        setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
-        setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
-        setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.WHITE));
-        setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.WHITE));
-        setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
-        setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
-        setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
-        Coordinates firstPawnWhite = new Coordinates("a2");
-        for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            if ((i % 2) == 0 )
+    public void loadPieces(String gameMode) {
+        if (gameMode.equals("normal")) {
+            // White
+            setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+            setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+            setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
+            setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
+            setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+            setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+            setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
+            setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
+            Coordinates firstPawnWhite = new Coordinates("a2");
+            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
                 setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
-            else
-                setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.WHITE));
-            firstPawnWhite.setX(firstPawnWhite.getX()+1);
-        }
+                firstPawnWhite.setX(firstPawnWhite.getX()+1);
+            }
 
-        // Black
-        setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.BLACK));
-        setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
-        setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
-        setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.BLACK));
-        setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.BLACK));
-        setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
-        setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
-        setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
-        Coordinates firstPawnBlack = new Coordinates("a7");
-        for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
-            if ((i%2) == 0)
+            // Black
+            setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+            setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+            setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
+            setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
+            setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+            setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+            setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
+            setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
+            Coordinates firstPawnBlack = new Coordinates("a7");
+            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
                 setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
-            else
-                setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
-            firstPawnBlack.setX(firstPawnBlack.getX()+1);
+                firstPawnBlack.setX(firstPawnBlack.getX()+1);
+            }
+        }
+        //fairy game mode
+        else {
+            // White
+            setPiece(new Coordinates("a1"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.WHITE));
+            setPiece(new Coordinates("h1"), new ChessPiece(ChessPieceType.ROOK, ChessColor.WHITE));
+            setPiece(new Coordinates("b1"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.WHITE));
+            setPiece(new Coordinates("g1"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.WHITE));
+            setPiece(new Coordinates("c1"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.WHITE));
+            setPiece(new Coordinates("f1"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.WHITE));
+            setPiece(new Coordinates("d1"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.WHITE));
+            setPiece(new Coordinates("e1"), new ChessPiece(ChessPieceType.KING, ChessColor.WHITE));
+            Coordinates firstPawnWhite = new Coordinates("a2");
+            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
+                if ((i % 2) == 0 )
+                    setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.PAWN, ChessColor.WHITE));
+                else
+                    setPiece(firstPawnWhite, new ChessPiece(ChessPieceType.MASTODON, ChessColor.WHITE));
+                firstPawnWhite.setX(firstPawnWhite.getX()+1);
+            }
+
+            // Black
+            setPiece(new Coordinates("a8"), new ChessPiece(ChessPieceType.EMPRESS, ChessColor.BLACK));
+            setPiece(new Coordinates("h8"), new ChessPiece(ChessPieceType.ROOK, ChessColor.BLACK));
+            setPiece(new Coordinates("b8"), new ChessPiece(ChessPieceType.KNIGHT, ChessColor.BLACK));
+            setPiece(new Coordinates("g8"), new ChessPiece(ChessPieceType.NIGHTRIDER, ChessColor.BLACK));
+            setPiece(new Coordinates("c8"), new ChessPiece(ChessPieceType.PRINCESS, ChessColor.BLACK));
+            setPiece(new Coordinates("f8"), new ChessPiece(ChessPieceType.BISHOP, ChessColor.BLACK));
+            setPiece(new Coordinates("d8"), new ChessPiece(ChessPieceType.QUEEN, ChessColor.BLACK));
+            setPiece(new Coordinates("e8"), new ChessPiece(ChessPieceType.KING, ChessColor.BLACK));
+            Coordinates firstPawnBlack = new Coordinates("a7");
+            for (int i = 0; i < CHESS_SQUARE_LENGTH; i++) {
+                if ((i%2) == 0)
+                    setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.PAWN, ChessColor.BLACK));
+                else
+                    setPiece(firstPawnBlack, new ChessPiece(ChessPieceType.MASTODON, ChessColor.BLACK));
+                firstPawnBlack.setX(firstPawnBlack.getX()+1);
+            }
         }
     }
 

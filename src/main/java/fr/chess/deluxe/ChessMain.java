@@ -8,6 +8,8 @@ import fr.chess.deluxe.utils.CoordinatesTypeAdapter;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Classe principale, génère:
  *  -le GSON qui contiendra les différents coups déjà fait dans la partie,
@@ -29,8 +31,11 @@ public class ChessMain extends Application {
         launch();
     }
     @Override
-    public void start(Stage stage) {
-        ChessBoard chessBoard = new ChessBoard();
+    public void start(Stage stage) throws ExecutionException, InterruptedException {
+        SelectGameMode selectGameMode = new SelectGameMode();
+        String gameMode = selectGameMode.getGamemodeChosen();
+
+        ChessBoard chessBoard = new ChessBoard(gameMode);
         ChessRender chessRender = new ChessRender(stage, chessBoard);
         chessRender.render();
     }
