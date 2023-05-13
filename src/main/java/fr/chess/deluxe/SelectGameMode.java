@@ -26,17 +26,17 @@ public class SelectGameMode {
 
         Button[] buttons = new Button[nbGameModes];
         buttons[0] = new Button("normal game mode");
-        buttons[0].setStyle("-fx-background-color: " + ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1.interpolate(ChessRender.CHESS_SQUARE_COLOR_2, 0.5)) + "; -fx-background-radius: 8px;");
+        buttons[0].setStyle("-fx-background-color: " + ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1.interpolate(ChessRender.CHESS_SQUARE_COLOR_2, 0.5)) + "; -fx-background-radius: 8px; -fx-font-size: 16pt;");
         for (int i=0; i<nbGameModes; i++) {
             int finalI = i;
             if (finalI != 0) {
                 buttons[i] = new Button("fairy game mode ");
-                buttons[finalI].setStyle("-fx-background-color: " + ChessRender.getColorHexa(Color.PINK) + "; -fx-background-radius: 8px;");
+                buttons[finalI].setStyle("-fx-background-color: " + ChessRender.getColorHexa(Color.PINK) + "; -fx-background-radius: 8px; -fx-font-size: 16pt;");
             }
             buttons[i].setWrapText(true);
             buttons[i].setTextAlignment(TextAlignment.CENTER);
-            buttons[i].setPrefWidth(ChessRender.CHESS_SQUARE_SIZE);
-            buttons[i].setPrefHeight(ChessRender.CHESS_SQUARE_SIZE);
+            buttons[i].setPrefWidth(2*ChessRender.CHESS_SQUARE_SIZE);
+            buttons[i].setPrefHeight(2*ChessRender.CHESS_SQUARE_SIZE);
             buttons[i].setPadding(new Insets(0));
 
             gridPane.add(buttons[i], i, 0);
@@ -54,7 +54,7 @@ public class SelectGameMode {
         BorderPane root = new BorderPane();
         root.setCenter(gridPane);
 
-        Scene scene = new Scene(root, 2*ChessRender.CHESS_SQUARE_SIZE, 1*ChessRender.CHESS_SQUARE_SIZE);
+        Scene scene = new Scene(root, 4*ChessRender.CHESS_SQUARE_SIZE, 2*ChessRender.CHESS_SQUARE_SIZE);
 
         stage.setResizable(false);
         stage.setTitle("Select gamemode");
