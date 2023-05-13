@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Cette classe gère le rendu, elle les informations comme la taille d'une case d'échec en pixels, les couleurs des
@@ -95,8 +96,18 @@ public class ChessRender {
 
         MenuItem newMenuItem = new MenuItem("New");
         newMenuItem.setOnAction(event -> {
-            this.chessBoard = new ChessBoard(this.chessBoard.getGameMode());
-            render();
+            stage.close();
+            SelectGameMode selectGameMode = new SelectGameMode();
+            String gameMode;
+            try {
+                gameMode = selectGameMode.getGamemodeChosen();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+
+            ChessBoard chessBoard = new ChessBoard(gameMode);
+            ChessRender chessRender = new ChessRender(stage, chessBoard);
+            chessRender.render();
         });
 
         MenuItem openMenuItem = new MenuItem("Open");
