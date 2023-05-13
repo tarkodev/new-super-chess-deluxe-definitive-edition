@@ -17,36 +17,35 @@ import java.util.concurrent.ExecutionException;
 
 public class SelectGameMode {
     private final Stage stage;
-    private static final int nbGameModes = 2;
-    private Button button[] = new Button[nbGameModes];
-    private final CompletableFuture<String> gamemodeChosen = new CompletableFuture<>();
+    public static final int nbGameModes = 2;
+    private final CompletableFuture<String> gameModeChosen = new CompletableFuture<>();
 
     public SelectGameMode() {
         stage = new Stage();
         GridPane gridPane = new GridPane();
 
+        Button[] buttons = new Button[nbGameModes];
+        buttons[0] = new Button("normal game mode");
+        buttons[0].setStyle("-fx-background-color: " + ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1.interpolate(ChessRender.CHESS_SQUARE_COLOR_2, 0.5)) + "; -fx-background-radius: 8px;");
         for (int i=0; i<nbGameModes; i++) {
             int finalI = i;
-            if (finalI == 0) {
-                button[0] = new Button("normal game mode");
+            if (finalI != 0) {
+                buttons[i] = new Button("fairy game mode ");
+                buttons[finalI].setStyle("-fx-background-color: " + ChessRender.getColorHexa(Color.PINK) + "; -fx-background-radius: 8px;");
             }
-            else {
-                button[i] = new Button("fairy game mode ");
-            }
-            button[i].setWrapText(true);
-            button[i].setTextAlignment(TextAlignment.CENTER);
-            button[i].setPrefWidth(ChessRender.CHESS_SQUARE_SIZE);
-            button[i].setPrefHeight(ChessRender.CHESS_SQUARE_SIZE);
-            button[i].setPadding(new Insets(0));
-            button[0].setStyle("-fx-background-color: " + ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1.interpolate(ChessRender.CHESS_SQUARE_COLOR_2, 0.5)) + "; -fx-background-radius: 8px;");
-            button[finalI].setStyle("-fx-background-color: " + ChessRender.getColorHexa(Color.PINK) + "; -fx-background-radius: 8px;");
-            gridPane.add(button[i], i, 0);
-            button[i].setOnAction(event -> {
+            buttons[i].setWrapText(true);
+            buttons[i].setTextAlignment(TextAlignment.CENTER);
+            buttons[i].setPrefWidth(ChessRender.CHESS_SQUARE_SIZE);
+            buttons[i].setPrefHeight(ChessRender.CHESS_SQUARE_SIZE);
+            buttons[i].setPadding(new Insets(0));
+
+            gridPane.add(buttons[i], i, 0);
+            buttons[i].setOnAction(event -> {
                 if (finalI == 0) {
-                    gamemodeChosen.complete("normal");
+                    gameModeChosen.complete("normal");
                 }
                 else {
-                    gamemodeChosen.complete("fairy");
+                    gameModeChosen.complete("fairy");
                 }
                 stage.close();
             });
@@ -67,7 +66,7 @@ public class SelectGameMode {
         stage.showAndWait(); // show the window and wait for it to be closed
     }
 
-    public String getGamemodeChosen() throws InterruptedException, ExecutionException {
-        return gamemodeChosen.get(); // wait for the user input and return the result
+    public String getGameModeChosen() throws InterruptedException, ExecutionException {
+        return gameModeChosen.get(); // wait for the user input and return the result
     }
 }

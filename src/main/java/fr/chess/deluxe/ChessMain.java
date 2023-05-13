@@ -33,7 +33,7 @@ public class ChessMain extends Application {
     @Override
     public void start(Stage stage) throws ExecutionException, InterruptedException {
         SelectGameMode selectGameMode = new SelectGameMode();
-        String gameMode = selectGameMode.getGamemodeChosen();
+        String gameMode = selectGameMode.getGameModeChosen();
 
         ChessBoard chessBoard = new ChessBoard(gameMode);
         ChessRender chessRender = new ChessRender(stage, chessBoard);

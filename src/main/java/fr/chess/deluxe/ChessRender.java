@@ -100,7 +100,7 @@ public class ChessRender {
             SelectGameMode selectGameMode = new SelectGameMode();
             String gameMode;
             try {
-                gameMode = selectGameMode.getGamemodeChosen();
+                gameMode = selectGameMode.getGameModeChosen();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }

@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import static java.lang.Math.abs;
@@ -86,7 +87,19 @@ public enum PieceMovement {
                         }
                         case PROMOTION -> {
                             board.movePiece(fromCoordinates, toCoordinates);
-                            board.setPiece(toCoordinates, new ChessPiece(ChessPieceType.QUEEN, playerPieceColor));
+
+                            ChessPieceType chessPieceTypeChosen = ChessPieceType.QUEEN;
+                            if (!board.isClone()) {
+                                int[] nbPossibilities = {4, 7};
+                                PromotionInterface promotionInterface = new PromotionInterface(nbPossibilities, board.getGameMode(), board.getSquare(toCoordinates).getPiece().getPieceColor());
+                                try {
+                                    chessPieceTypeChosen = promotionInterface.pieceChosen();
+                                } catch (InterruptedException | ExecutionException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            board.setPiece(toCoordinates, new ChessPiece(chessPieceTypeChosen, playerPieceColor));
                         }
                         default -> board.movePiece(fromCoordinates, toCoordinates);
                     }
