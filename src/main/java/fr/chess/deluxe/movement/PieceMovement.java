@@ -264,7 +264,7 @@ public enum PieceMovement {
             Coordinates enPassantLeft = squareCoordinates.clone().add(-1, 0);
             if (chessBoard.getSquare(enPassantLeft) != null && chessBoard.getSquare(enPassantLeft).hasPiece()
                     && lastPieceMovementLog.getToCoordinates().equals(enPassantLeft)
-                    && lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN
+                    && (lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN || lastPieceMovementLog.getPiece().getType() == ChessPieceType.MASTODON)
                     && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
                 Coordinates enPassantMovement = squareCoordinates.clone().add(-1, oneStep);
                 check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
@@ -273,7 +273,7 @@ public enum PieceMovement {
             Coordinates enPassantRight = squareCoordinates.clone().add(1, 0);
             if (chessBoard.getSquare(enPassantRight) != null && chessBoard.getSquare(enPassantRight).hasPiece()
                     && lastPieceMovementLog.getToCoordinates().equals(enPassantRight)
-                    && lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN
+                    && (lastPieceMovementLog.getPiece().getType() == ChessPieceType.PAWN || lastPieceMovementLog.getPiece().getType() == ChessPieceType.MASTODON)
                     && abs(lastPieceMovementLog.getToCoordinates().getY() - lastPieceMovementLog.getFromCoordinates().getY()) == 2) {
                 Coordinates enPassantRightMovement = squareCoordinates.clone().add(1, oneStep);
                 check(chessBoard, squarePieceColor, squareCoordinates.clone(), coordinates -> coordinates.set(enPassantRightMovement), false, possibleSquare, PieceMovementRules.EN_PASSANT);
