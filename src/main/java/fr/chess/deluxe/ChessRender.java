@@ -230,9 +230,8 @@ public class ChessRender {
 
             chessBoard.getPlayerInformation().forEach((chessColor, playerInformation) -> {
                 switch (playerInformation.getCheckStatus()) {
-                    case CHECKMATE:
-                    case STALEMATE:
-                    showMessage("THE END!", "-> " + playerInformation.getCheckStatus(), chessColor.toggle() + " Wins", Alert.AlertType.NONE);
+                    case CHECKMATE -> showMessage("THE END!", "-> " + playerInformation.getCheckStatus(), chessColor.toggle() + " Wins", Alert.AlertType.NONE);
+                    case STALEMATE -> showMessage("THE END!", "-> " + playerInformation.getCheckStatus(), "Nobody Wins", Alert.AlertType.NONE);
                 }
             });
         });
