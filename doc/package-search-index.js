@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"fr.chess.deluxe","l":"fr.chess.deluxe"},{"m":"fr.chess.deluxe","l":"fr.chess.deluxe.movement"},{"m":"fr.chess.deluxe","l":"fr.chess.deluxe.piece"},{"m":"fr.chess.deluxe","l":"fr.chess.deluxe.utils"}];updateSearchResults();

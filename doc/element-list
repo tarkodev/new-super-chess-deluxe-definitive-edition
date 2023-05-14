@@ -1,0 +1,5 @@
+module:fr.chess.deluxe
+fr.chess.deluxe
+fr.chess.deluxe.movement
+fr.chess.deluxe.piece
+fr.chess.deluxe.utils

@@ -1,0 +1,1 @@
+moduleSearchIndex = [{"l":"fr.chess.deluxe"}];updateSearchResults();
