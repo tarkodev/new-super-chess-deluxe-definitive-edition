@@ -12,6 +12,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -136,9 +137,13 @@ public class ChessBoard {
     }
 
     public void loadPieces(String gameMode) {
-        String path = new String("src/main/resources/JSONSaveConfigurations/" + gameMode + ".chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus");
+        String path = "/JSONSaveConfigurations/" + gameMode + ".chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus";
         File selectedFile;
-        selectedFile = new File(path);
+        try {
+            selectedFile = new File(getClass().getResource(path).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("Selected file: " + selectedFile.getAbsolutePath());
         try {
