@@ -11,6 +11,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -138,22 +139,26 @@ public class ChessBoard {
 
     public void loadPieces(String gameMode) {
         String path = "/JSONSaveConfigurations/" + gameMode + ".chessboardsavefileforthebestgameevercreatednamednewsuperchessdeluxedefinitiveeditionplusplus";
-        File selectedFile;
-        try {
-            selectedFile = new File(getClass().getResource(path).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        InputStream is = getClass().getResourceAsStream(path);
+        if (is == null) {
+            System.err.println("Could not find resource: " + path);
+            return;
         }
 
-        System.out.println("Selected file: " + selectedFile.getAbsolutePath());
         try {
-            String content = new String(Files.readAllBytes(selectedFile.toPath()), StandardCharsets.UTF_8);
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
 
             // Process the content as needed
             ChessBoard chessBoard = ChessMain.GSON.fromJson(content, ChessBoard.class);
             this.copyFrom(chessBoard);
         } catch (IOException e) {
             System.err.println("Error reading from file: " + e.getMessage());
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                System.err.println("Error closing stream: " + e.getMessage());
+            }
         }
     }
 
