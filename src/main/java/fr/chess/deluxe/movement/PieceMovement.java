@@ -91,7 +91,7 @@ public enum PieceMovement {
                             ChessPieceType chessPieceTypeChosen = ChessPieceType.QUEEN;
                             if (!board.isClone()) {
                                 int[] nbPossibilities = {4, 7};
-                                PromotionInterface promotionInterface = new PromotionInterface(nbPossibilities, board.getGameMode(), board.getSquare(toCoordinates).getPiece().getPieceColor());
+                                PromotionInterface promotionInterface = new PromotionInterface(nbPossibilities, board.getGameMode(), playerPieceColor);
                                 try {
                                     chessPieceTypeChosen = promotionInterface.pieceChosen();
                                 } catch (InterruptedException | ExecutionException e) {
