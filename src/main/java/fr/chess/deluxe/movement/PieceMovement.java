@@ -175,6 +175,7 @@ public enum PieceMovement {
                     if (!chessBoard.getSquare(kingLeft2).hasPiece() && !checkCoordinates.contains(kingLeft2) &&
                             !chessBoard.getSquare(kingLeft3).hasPiece() && !checkCoordinates.contains(kingLeft3) &&
                             !chessBoard.getSquare(kingLeft4).hasPiece() && !checkCoordinates.contains(kingLeft4) &&
+                            !checkCoordinates.contains(king) &&
                             chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
                                     && pieceMovementLog.getPiece().getType() == ChessPieceType.ROOK
                                     && pieceMovementLog.getFromCoordinates().equals(kingLeft1) && chessBoard.getSquare(kingLeft1).hasPiece() &&  chessBoard.getSquare(kingLeft1).getPiece().getType().equals(ChessPieceType.ROOK) )) {
@@ -186,6 +187,7 @@ public enum PieceMovement {
                     //If the right tower has not moved
                     if (!chessBoard.getSquare(kingRight3).hasPiece() && !checkCoordinates.contains(kingRight3) &&
                             !chessBoard.getSquare(kingRight2).hasPiece() && !checkCoordinates.contains(kingRight2) &&
+                            !checkCoordinates.contains(king) &&
                             chessBoard.getPieceMovementLogs().stream().noneMatch(pieceMovementLog -> pieceMovementLog.getPiece().getPieceColor().equals(squarePieceColor)
                                     && pieceMovementLog.getPiece().getType() == ChessPieceType.ROOK
                                     && pieceMovementLog.getFromCoordinates().equals(kingRight1)) && chessBoard.getSquare(kingRight1).hasPiece() &&  chessBoard.getSquare(kingRight1).getPiece().getType().equals(ChessPieceType.ROOK)) {
