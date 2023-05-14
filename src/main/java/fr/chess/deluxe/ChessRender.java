@@ -288,12 +288,8 @@ public class ChessRender {
             Map<ChessColor, PlayerInformation> chessColorPlayerInformationMap = chessBoard.getPlayerInformation();
             switch (chessColorPlayerInformationMap.get(chessSquare.getPiece().getPieceColor()).getCheckStatus()) {
                 case CHECK -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECK, 0.5);
-                case CHECKMATE -> {
-                    renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
-                }
-                case STALEMATE -> {
-                    renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_STALEMATE, 0.5);
-                }
+                case CHECKMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_CHECKMATE, 0.5);
+                case STALEMATE -> renderColor = chessSquare.getColor().interpolate(ChessRender.CHESS_BACKGROUND_STALEMATE, 0.5);
             }
         }
         button.setStyle("-fx-background-color: " + getColorHexa(renderColor) + "; -fx-background-radius: 8px;");
