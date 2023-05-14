@@ -34,6 +34,12 @@ public class PromotionInterface {
         buttons = new Button[actualNbPossibilities];
         stage = new Stage();
         GridPane gridPane = new GridPane();
+        String backgroundColor;
+        if (gameMode.equals("normal"))
+            backgroundColor = ChessRender.getColorHexa(ChessRender.CHESS_BACKGROUND_COLOR);
+        else
+            backgroundColor = ChessRender.getColorHexa(Color.PINK.interpolate(Color.PURPLE, 0.5));
+        gridPane.setStyle("-fx-background-color: " + backgroundColor);
 
         for (int i = 0; i < actualNbPossibilities; i++) {
             buttons[i] = new Button("");
@@ -42,13 +48,21 @@ public class PromotionInterface {
             buttons[i].setPrefWidth(ChessRender.CHESS_SQUARE_SIZE);
             buttons[i].setPrefHeight(ChessRender.CHESS_SQUARE_SIZE);
             buttons[i].setPadding(new Insets(0));
+            String ButtonBackgroundColor;
             if (gameMode.equals("normal")) {
-                buttons[i].setStyle("-fx-background-color: " + ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1.interpolate(ChessRender.CHESS_SQUARE_COLOR_2, 0.5)) + "; -fx-background-radius: 8px;");
+                if ((i%2 + i/2) % 2 == 0)
+                    ButtonBackgroundColor = ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_1);
+                else
+                    ButtonBackgroundColor = ChessRender.getColorHexa(ChessRender.CHESS_SQUARE_COLOR_2);
                 gridPane.add(buttons[i], i % 2, i / 2);
             } else {
-                buttons[i].setStyle("-fx-background-color: " + ChessRender.getColorHexa(Color.PINK) + "; -fx-background-radius: 8px;");
+                if ((i%4 + i/4) % 2 == 0)
+                    ButtonBackgroundColor = ChessRender.getColorHexa(Color.PINK);
+                else
+                    ButtonBackgroundColor = ChessRender.getColorHexa(Color.VIOLET);
                 gridPane.add(buttons[i], i % 4, i / 4);
             }
+            buttons[i].setStyle("-fx-background-color: " + ButtonBackgroundColor + "; -fx-background-radius: 8px;");
             String color = (pieceColor.equals(ChessColor.WHITE) ? "w" : "b");
             String pieceName = switch (i) {
                 case 1 -> "R";
